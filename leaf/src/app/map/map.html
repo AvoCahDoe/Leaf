@@ -1,0 +1,88 @@
+<div class="map-container">
+  <button class="modal-toggle" (click)="toggleGestionModal()">Gestion de markers</button>
+
+  <div *ngIf="isLoading" class="loading">Loading markers...</div>
+  <div id="map" style="height: 100%;"></div>
+
+  <div class="modal" *ngIf="showGestionModal">
+    <h3>Ajouter un marqueur</h3>
+    <label>
+      Nom:
+      <input required type="text" [(ngModel)]="newMarkerName" placeholder="Entrez le nom" />
+    </label>
+    <label>
+      Latitude:
+      <input required type="number" [(ngModel)]="newLatitude" placeholder="Entrez la latitude" />
+    </label>
+    <label>
+      Longitude:
+      <input required type="number" [(ngModel)]="newLongitude" placeholder="Entrez la longitude" />
+    </label>
+    <label>
+      Activity:
+      <input type="text" [(ngModel)]="newActivity" placeholder="Activité" />
+    </label>
+    <label>
+      Address:
+      <input type="text" [(ngModel)]="newAddress" placeholder="Adresse" />
+    </label>
+    <label>
+      City:
+      <input type="text" [(ngModel)]="newCity" placeholder="Ville" />
+    </label>
+    <label>
+      Phone:
+      <input type="text" [(ngModel)]="newPhone" placeholder="Téléphone" />
+    </label>
+    <label>
+      Fax:
+      <input type="text" [(ngModel)]="newFax" placeholder="Fax" />
+    </label>
+    <label>
+      Email:
+      <input type="email" [(ngModel)]="newEmail" placeholder="Email" />
+    </label>
+    <label>
+      RC:
+      <input type="text" [(ngModel)]="newRc" placeholder="RC" />
+    </label>
+    <label>
+      ICE:
+      <input type="text" [(ngModel)]="newIce" placeholder="ICE" />
+    </label>
+    <label>
+      Form:
+      <select required [(ngModel)]="newForm">
+        <option value="" disabled selected>-- Sélectionnez le type --</option>
+        <option value="COOPERATIVE">COOPERATIVE</option>
+        <option value="ENTREPRISE">ENTREPRISE</option>
+        <option value="ASSOCIATION">ASSOCIATION</option>
+      </select>
+    </label>
+    <button (click)="addMarker()" class="btn-add">Ajouter</button>
+
+    <hr />
+
+    <h4>Marqueurs existants ({{ markers.length }})</h4>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>City</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let marker of markers; let i = index; trackBy: trackById">
+          <td>{{ marker.name }}</td>
+          <td>{{ marker.city }}</td>
+          <td>
+            <button (click)="centerMapOnMarker(marker)" class="btn btn-center">Centrer</button>
+            <button (click)="removeMarker(i)" class="btn btn-delete">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
