@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import * as L from 'leaflet';
+import 'leaflet-routing-machine';
 
 interface Marker {
   id?: string;
@@ -34,7 +35,12 @@ interface Marker {
 })
 export class CartMapComponent implements AfterViewInit {
   map!: L.Map;
+  routingControl: any;
+
   showGestionModal = false;
+  showRoutingInputs = false;
+
+  // Form data
   newLatitude: number | null = null;
   newLongitude: number | null = null;
   newMarkerName = '';
@@ -51,9 +57,15 @@ export class CartMapComponent implements AfterViewInit {
   newProvince = '';
   newPlace = '';
 
+  selectedA: string = '';
+  selectedB: string = '';
+  userLocation: L.LatLng | null = null;
+
   isLoading = false;
   markers: Marker[] = [];
   leafletMarkers: { [id: string]: L.Marker } = {};
+
+  currentRouteInfo?: { distanceKm: string; timeMin: number };
 
   private apiUrl = 'http://localhost:5000/markers';
 
@@ -75,6 +87,16 @@ export class CartMapComponent implements AfterViewInit {
   toggleGestionModal(): void {
     this.showGestionModal = !this.showGestionModal;
     setTimeout(() => this.map.invalidateSize(), 300);
+  }
+
+  toggleRoutingInputs(): void {
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+      this.routingControl = null;
+      this.currentRouteInfo = undefined;
+    }
+
+    this.showRoutingInputs = !this.showRoutingInputs;
   }
 
   private initMap(): void {
@@ -142,6 +164,7 @@ export class CartMapComponent implements AfterViewInit {
       this.addMarkerToMap(createdMarker, true);
       this.cdr.detectChanges();
 
+      // Reset form
       this.newLatitude = null;
       this.newLongitude = null;
       this.newMarkerName = '';
@@ -165,7 +188,10 @@ export class CartMapComponent implements AfterViewInit {
     };
 
     const icon = marker.form && iconsMap[marker.form.toUpperCase()] ? iconsMap[marker.form.toUpperCase()] : L.icon({
-      iconUrl: 'assets/marker-icon.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
+      iconUrl: 'assets/marker-icon.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
     });
 
     const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
@@ -184,10 +210,10 @@ export class CartMapComponent implements AfterViewInit {
 
   generatePopupContent(marker: Marker): string {
     let content = `<strong>${marker.name}</strong><br/>`;
-    if (marker.activity) content += `Activity: ${marker.activity}<br/>`;
-    if (marker.address) content += `Address: ${marker.address}<br/>`;
-    if (marker.city) content += `City: ${marker.city}<br/>`;
-    if (marker.phone) content += `Phone: ${marker.phone}<br/>`;
+    if (marker.activity) content += `Activité: ${marker.activity}<br/>`;
+    if (marker.address) content += `Adresse: ${marker.address}<br/>`;
+    if (marker.city) content += `Ville: ${marker.city}<br/>`;
+    if (marker.phone) content += `Téléphone: ${marker.phone}<br/>`;
     if (marker.addr_postcode) content += `Code Postal: ${marker.addr_postcode}<br/>`;
     if (marker.addr_province) content += `Province: ${marker.addr_province}<br/>`;
     if (marker.addr_place) content += `Lieu-dit: ${marker.addr_place}<br/>`;
@@ -195,7 +221,7 @@ export class CartMapComponent implements AfterViewInit {
     if (marker.email) content += `Email: ${marker.email}<br/>`;
     if (marker.rc) content += `RC: ${marker.rc}<br/>`;
     if (marker.ice) content += `ICE: ${marker.ice}<br/>`;
-    if (marker.form) content += `Form: ${marker.form}<br/>`;
+    if (marker.form) content += `Forme: ${marker.form}<br/>`;
     return content;
   }
 
@@ -231,9 +257,10 @@ export class CartMapComponent implements AfterViewInit {
       (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        this.map.setView([lat, lng], 15);
+        this.userLocation = L.latLng(lat, lng);
+        this.map.setView(this.userLocation, 15);
 
-        const userMarker = L.marker([lat, lng], {
+        L.marker(this.userLocation, {
           icon: L.icon({
             iconUrl: 'assets/UserIcon.png',
             iconSize: [65, 65],
@@ -246,6 +273,46 @@ export class CartMapComponent implements AfterViewInit {
         alert('Impossible d’obtenir votre position : ' + error.message);
       }
     );
+  }
+
+  drawRoute(): void {
+    //remove existing route before initiating
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+      this.routingControl = null;
+    }
+
+    const getLatLng = (value: string): L.LatLng | null => {
+      if (value === 'user' && this.userLocation) return this.userLocation;
+      const marker = this.markers.find(m => m.id === value);
+      return marker ? L.latLng(marker.lat, marker.lng) : null;
+    };
+
+    const pointA = getLatLng(this.selectedA);
+    const pointB = getLatLng(this.selectedB);
+
+    if (pointA && pointB) {
+      this.routingControl = L.Routing.control({
+        waypoints: [pointA, pointB],
+        routeWhileDragging: false,
+        addWaypoints: false,
+        show: false
+      }).addTo(this.map);
+
+      const container = this.routingControl.getContainer();
+      if (container) container.style.display = 'none';
+
+      this.routingControl.on('routesfound', (e: any) => {
+        const route = e.routes[0];
+        const summary = route.summary;
+        const distanceKm = (summary.totalDistance / 1000).toFixed(2);
+        const timeMin = Math.round(summary.totalTime / 60);
+        this.currentRouteInfo = { distanceKm, timeMin };
+        this.cdr.detectChanges();
+      });
+    } else {
+      alert('Veuillez sélectionner deux points valides.');
+    }
   }
 
   geocodeAddress(address: string, city: string): Promise<{ lat: number; lng: number } | null> {

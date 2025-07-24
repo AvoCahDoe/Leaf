@@ -1,219 +1,561 @@
-/* Container fills viewport height */
+// Variables
+$primary-color: #2563eb;
+$primary-hover: #1d4ed8;
+$secondary-color: #64748b;
+$success-color: #10b981;
+$danger-color: #ef4444;
+$warning-color: #f59e0b;
+$background-color: #ffffff;
+$surface-color: #f8fafc;
+$border-color: #e2e8f0;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$transition: all 0.2s ease-in-out;
+
+// Mixins
+@mixin button-base {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: $border-radius;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: $transition;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  outline: none;
+
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin input-base {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  transition: $transition;
+  background-color: $background-color;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  &::placeholder {
+    color: $text-secondary;
+  }
+}
+
+@mixin modal-base {
+  position: absolute;
+  background: $background-color;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-large;
+  border: 1px solid $border-color;
+  z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $surface-color;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 3px;
+
+    &:hover {
+      background: $secondary-color;
+    }
+  }
+}
+
+// Main container
 .map-container {
   position: relative;
   width: 100%;
   height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f2f5;
-  color: #333;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Leaflet map fills container */
-#map {
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
-}
-
-/* Button group container with flex layout */
+// Button group
 .button-group {
   position: absolute;
-  top: 10px;
-  left: 70px;
-  z-index: 1100;
+  top: 10rem;
+  left: 0.5rem;
+  z-index: 999;
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  button {
+    @include button-base;
+    background-color: $background-color;
+    color: $text-primary;
+    border: 1px solid $border-color;
+    box-shadow: $shadow-medium;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: $surface-color;
+      transform: translateY(-1px);
+      box-shadow: $shadow-large;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: calc(100vw - 2rem);
+
+    button {
+      font-size: 0.75rem;
+      padding: 0.5rem 1rem;
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+
+    button {
+      font-size: 0.75rem;
+      padding: 0.5rem 0.75rem;
+    }
+  }
 }
 
-/* Shared button style */
-.button-group button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  cursor: pointer;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 4px 8px rgb(0 123 255 / 0.4);
-  transition: background-color 0.3s ease;
-}
-
-.button-group button:hover {
-  background: #0056b3;
-}
-
-.modal {
-  position: absolute;
-  top: 60px;
-  left: 15px;
-  background: white;
-  padding: 20px 24px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  z-index: 1100;
-  width: 800px;
-  max-height: 85vh;
-  overflow-y: auto;
-  border: solid rgb(3, 3, 3);
-}
-
-/* Headings */
-.modal h3,
-.modal h4 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #212529;
-  font-weight: 700;
-}
-
-/* Label + input styling */
-.modal label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #444;
-}
-
-.modal input,
-.modal select {
-  width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 14px;
-  border: 1.8px solid #ced4da;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  font-family: inherit;
-}
-
-.modal input:focus,
-.modal select:focus {
-  border-color: #80bdff;
-  outline: none;
-  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
-}
-
-/* Add button */
-.btn-add {
-  width: 100%;
-  background-color: #28a745;
-  border: none;
-  color: white;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 10px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 5px 10px rgba(40, 167, 69, 0.5);
-  transition: background-color 0.3s ease;
-  margin-bottom: 18px;
-}
-.btn-add:hover {
-  background-color: #218838;
-}
-
-/* Loading overlay */
+// Loading spinner
 .loading {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-weight: 700;
-  z-index: 1200;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 14px 28px;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-  font-size: 18px;
-  color: #007bff;
+  z-index: 999;
+  background: $background-color;
+  padding: 1.5rem 2rem;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-large;
+  color: $text-primary;
+  font-weight: 500;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid $border-color;
+    border-top: 2px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 0.5rem;
+  }
 }
 
-/* Table styling */
-table {
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Map
+.map {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
-  font-size: 14px;
+  height: 100%;
+  border-radius: 0;
 }
 
-th,
-td {
-  border: 1px solid #dee2e6;
-  padding: 10px 12px;
-  text-align: center;
+// Gestion Modal
+.gestion-modal {
+  @include modal-base;
+  top: 1rem;
+  right: 1rem;
+  width: 400px;
+  max-width: calc(100vw - 2rem);
+  padding: 1.5rem;
+
+  h2 {
+    margin: 0 0 1.5rem 0;
+    color: $text-primary;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin: 1.5rem 0 1rem 0;
+    color: $text-primary;
+    font-size: 1rem;
+    font-weight: 600;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  .modal-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .section {
+    padding: 1.25rem;
+    background: $surface-color;
+    border-radius: $border-radius;
+    border: 1px solid $border-color;
+
+    h3 {
+      margin: 0 0 1rem 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $primary-color;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    label {
+      display: block;
+      margin: 0.75rem 0 0.25rem 0;
+      font-weight: 500;
+      color: $text-primary;
+      font-size: 0.875rem;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+    }
+
+    input, select {
+      @include input-base;
+    }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
+      appearance: none;
+    }
+  }
+
+  .form-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    button[type="submit"] {
+      @include button-base;
+      background-color: $primary-color;
+      color: white;
+      flex: 1;
+
+      &:hover {
+        background-color: $primary-hover;
+      }
+    }
+
+    button[type="button"] {
+      @include button-base;
+      background-color: $surface-color;
+      color: $text-secondary;
+      border: 1px solid $border-color;
+
+      &:hover {
+        background-color: $border-color;
+      }
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+
+    li {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem;
+      margin-bottom: 0.5rem;
+      background: $surface-color;
+      border-radius: $border-radius;
+      border: 1px solid $border-color;
+      transition: $transition;
+
+      &:hover {
+        background: lighten($surface-color, 2%);
+        border-color: darken($border-color, 5%);
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .marker-name {
+        font-weight: 500;
+        color: $text-primary;
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .marker-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      button {
+        @include button-base;
+        padding: 0.5rem 0.75rem;
+        min-width: auto;
+        background: transparent;
+        border: 1px solid transparent;
+        font-size: 0.875rem;
+        border-radius: 6px;
+        transition: $transition;
+
+        &.center-btn {
+          color: $primary-color;
+          background-color: rgba(37, 99, 235, 0.08);
+
+          &:hover {
+            background-color: rgba(37, 99, 235, 0.15);
+            border-color: rgba(37, 99, 235, 0.2);
+            transform: translateY(-1px);
+          }
+        }
+
+        &.delete-btn {
+          color: $danger-color;
+          background-color: rgba(239, 68, 68, 0.08);
+
+          &:hover {
+            background-color: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    height: 100vh;
+    border-radius: 0;
+    padding: 1rem;
+
+    .modal-sections {
+      .section {
+        padding: 1rem;
+      }
+    }
+  }
 }
 
-th {
-  background-color: #007bff;
-  color: white;
-  font-weight: 700;
+// Itineraire Form
+.itineraire-form {
+  @include modal-base;
+  bottom: 1rem;
+  left: 1rem;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+  padding: 1.25rem;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: $text-primary;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  label {
+    display: block;
+    margin: 0.75rem 0 0.25rem 0;
+    font-weight: 500;
+    color: $text-primary;
+    font-size: 0.875rem;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  select {
+    @include input-base;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    appearance: none;
+  }
+
+  .form-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+
+    button {
+      @include button-base;
+      flex: 1;
+
+      &:first-child {
+        background-color: $success-color;
+        color: white;
+
+        &:hover {
+          background-color: darken($success-color, 10%);
+        }
+      }
+
+      &:last-child {
+        background-color: $surface-color;
+        color: $text-secondary;
+        border: 1px solid $border-color;
+
+        &:hover {
+          background-color: $border-color;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: none;
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
+  }
 }
 
-tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
+// Animation classes
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-tbody tr:hover {
-  background-color: #e9ecef;
-  cursor: pointer;
+.slide-in-right {
+  animation: slideInRight 0.3s ease-in-out;
 }
 
-/* Buttons inside table */
-.btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.25s ease;
-  user-select: none;
+.slide-in-up {
+  animation: slideInUp 0.3s ease-in-out;
 }
 
-.btn-center {
-  background-color: #17a2b8;
-  color: white;
-  margin-right: 6px;
-  box-shadow: 0 3px 6px rgba(23, 162, 184, 0.4);
-}
-.btn-center:hover {
-  background-color: #117a8b;
-}
-
-.btn-delete {
-  background-color: #dc3545;
-  color: white;
-  box-shadow: 0 3px 6px rgba(220, 53, 69, 0.4);
-}
-.btn-delete:hover {
-  background-color: #a71d2a;
-}
-.modal-sections {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  flex-wrap: wrap;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.section {
-  flex: 1;
-  min-width: 200px;
-  margin : 10px 20px ;
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-.section-wide {
-  flex: 2;
-  min-width: 380px;
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.section h4 {
-  margin-top: 0;
-  font-size: 16px;
-  color: #007bff;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 4px;
-  margin-bottom: 12px;
+// Responsive breakpoints
+@media (max-width: 1024px) {
+  .gestion-modal {
+    width: 360px;
+  }
+
+  .itineraire-form {
+    width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .button-group {
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    button {
+      font-size: 0.75rem;
+      padding: 0.5rem;
+    }
+  }
+
+  .gestion-modal {
+    padding: 0.75rem;
+
+    .section {
+      padding: 0.75rem;
+    }
+
+    .form-buttons {
+      flex-direction: column;
+    }
+  }
+
+  .itineraire-form {
+    padding: 1rem;
+
+    .form-buttons {
+      flex-direction: column;
+    }
+  }
 }
