@@ -9,92 +9,98 @@
   <div id="map" style="height: 100%;"></div>
 
   <div class="modal" *ngIf="showGestionModal">
-    <h3>Ajouter un marqueur</h3>
-    <label>
-      Nom:
-      <input required type="text" [(ngModel)]="newMarkerName" placeholder="Entrez le nom" />
-    </label>
-    <label>
-      Latitude:
-      <input  type="number" [(ngModel)]="newLatitude" placeholder="Entrez la latitude" />
-    </label>
-    <label>
-      Longitude:
-      <input  type="number" [(ngModel)]="newLongitude" placeholder="Entrez la longitude" />
-    </label>
-    <label>
-      Activity:
-      <input type="text" [(ngModel)]="newActivity" placeholder="Activité" />
-    </label>
-    <label>
-      Address:
-      <input type="text" [(ngModel)]="newAddress" placeholder="Adresse" />
-    </label>
-    <label>
-      City:
-      <input type="text" [(ngModel)]="newCity" placeholder="Ville" />
-    </label>
-    <label>
-      Phone:
-      <input type="text" [(ngModel)]="newPhone" placeholder="Téléphone" />
-    </label>
-    <label>
-      Fax:
-      <input type="text" [(ngModel)]="newFax" placeholder="Fax" />
-    </label>
-    <label>
-      Email:
-      <input type="email" [(ngModel)]="newEmail" placeholder="Email" />
-    </label>
-    <label>
-      RC:
-      <input type="text" [(ngModel)]="newRc" placeholder="RC" />
-    </label>
-    <label>
-      ICE:
-      <input type="text" [(ngModel)]="newIce" placeholder="ICE" />
-    </label>
-    <label>
-      Form:
-      <select required [(ngModel)]="newForm">
-        <option value="" disabled selected>-- Sélectionnez le type --</option>
-        <option value="COOPERATIVE">COOPERATIVE</option>
-        <option value="ENTREPRISE">ENTREPRISE</option>
-        <option value="ASSOCIATION">ASSOCIATION</option>
-      </select>
-    </label>
-    <button (click)="addMarker()" class="btn-add">Ajouter</button>
+  <h3>Ajouter un marqueur</h3>
+  <div class="modal-sections">
+    <!-- Section Générique -->
+    <div class="section">
+      <h4>Infos Génériques</h4>
+      <label>Nom:
+        <input required type="text" [(ngModel)]="newMarkerName" placeholder="Entrez le nom" />
+      </label>
+      <label>Activité:
+        <input type="text" [(ngModel)]="newActivity" placeholder="Activité" />
+      </label>
+      <label>Phone:
+        <input type="text" [(ngModel)]="newPhone" placeholder="Téléphone" />
+      </label>
+      <label>Fax:
+        <input type="text" [(ngModel)]="newFax" placeholder="Fax" />
+      </label>
+      <label>Email:
+        <input type="email" [(ngModel)]="newEmail" placeholder="Email" />
+      </label>
+      <label>RC:
+        <input type="text" [(ngModel)]="newRc" placeholder="RC" />
+      </label>
+      <label>ICE:
+        <input type="text" [(ngModel)]="newIce" placeholder="ICE" />
+      </label>
+      <label>Forme:
+        <select required [(ngModel)]="newForm">
+          <option value="" disabled selected>-- Sélectionnez le type --</option>
+          <option value="COOPERATIVE">COOPERATIVE</option>
+          <option value="ENTREPRISE">ENTREPRISE</option>
+          <option value="ASSOCIATION">ASSOCIATION</option>
+        </select>
+      </label>
+    </div>
 
-    <hr />
+    <!-- Section Géo -->
+    <div class="section">
+      <h4>Infos Géo / Adresse</h4>
+      <label>Latitude:
+        <input type="number" [(ngModel)]="newLatitude" placeholder="Latitude" />
+      </label>
+      <label>Longitude:
+        <input type="number" [(ngModel)]="newLongitude" placeholder="Longitude" />
+      </label>
+      <label>Adresse:
+        <input type="text" [(ngModel)]="newAddress" placeholder="Adresse" />
+      </label>
+      <label>Ville:
+        <input type="text" [(ngModel)]="newCity" placeholder="Ville" />
+      </label>
+      <label>Code Postal:
+        <input type="text" [(ngModel)]="newPostcode" placeholder="Code postal" />
+      </label>
+      <label>Province:
+        <input type="text" [(ngModel)]="newProvince" placeholder="Province" />
+      </label>
+      <label>Quartier / lieu-dit:
+        <input type="text" [(ngModel)]="newPlace" placeholder="Lieu-dit / quartier" />
+      </label>
+    </div>
 
-    <h4>Marqueurs existants ({{ markers.length }})</h4>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>City</th>
-                    <th>Lat</th>
-                                        <th>long</th>
-
-
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let marker of markers; let i = index; trackBy: trackById">
-          <td>{{ marker.name }}</td>
-          <td>{{ marker.city }}</td>
-                    <td>{{ marker.lat }}</td>
-
-                              <td>{{ marker.lng }}</td>
-
-          <td>
-            <button (click)="centerMapOnMarker(marker)" class="btn btn-center">Centrer</button>
-            <button (click)="removeMarker(i)" class="btn btn-delete">Supprimer</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Section Table -->
+    <div class="section section-wide">
+      <h4>Marqueurs existants ({{ markers.length }})</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Ville</th>
+            <th>Lat</th>
+            <th>Lng</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let marker of markers; let i = index; trackBy: trackById">
+            <td>{{ marker.name }}</td>
+            <td>{{ marker.city }}</td>
+            <td>{{ marker.lat }}</td>
+            <td>{{ marker.lng }}</td>
+            <td>
+              <button (click)="centerMapOnMarker(marker)" class="btn btn-center">Centrer</button>
+              <button (click)="removeMarker(i)" class="btn btn-delete">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+
+  <button (click)="addMarker()" class="btn-add">Ajouter</button>
+</div>
+
 </div>

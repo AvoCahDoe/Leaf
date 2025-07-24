@@ -17,7 +17,12 @@ interface Marker {
   email?: string;
   rc?: string;
   ice?: string;
-  form?: string; // COOPERATIVE, ENTREPRISE, ASSOCIATION
+  form?: string;
+  addr_housenumber?: string;
+  addr_street?: string;
+  addr_postcode?: string;
+  addr_province?: string;
+  addr_place?: string;
 }
 
 @Component({
@@ -30,7 +35,6 @@ interface Marker {
 export class CartMapComponent implements AfterViewInit {
   map!: L.Map;
   showGestionModal = false;
-
   newLatitude: number | null = null;
   newLongitude: number | null = null;
   newMarkerName = '';
@@ -43,6 +47,9 @@ export class CartMapComponent implements AfterViewInit {
   newRc = '';
   newIce = '';
   newForm = '';
+  newPostcode = '';
+  newProvince = '';
+  newPlace = '';
 
   isLoading = false;
   markers: Marker[] = [];
@@ -67,9 +74,7 @@ export class CartMapComponent implements AfterViewInit {
 
   toggleGestionModal(): void {
     this.showGestionModal = !this.showGestionModal;
-    setTimeout(() => {
-      this.map.invalidateSize();
-    }, 300);
+    setTimeout(() => this.map.invalidateSize(), 300);
   }
 
   private initMap(): void {
@@ -92,96 +97,76 @@ export class CartMapComponent implements AfterViewInit {
   }
 
   async addMarker(): Promise<void> {
-  const validForms = ['COOPERATIVE', 'ENTREPRISE', 'ASSOCIATION'];
-  if (!validForms.includes(this.newForm.toUpperCase())) {
-    alert('Veuillez sélectionner un type de form valide.');
-    return;
-  }
-
-  let lat = this.newLatitude;
-  let lng = this.newLongitude;
-
-  if (lat === null || lng === null) {
-    const geocoded = await this.geocodeAddress(this.newAddress, this.newCity);
-    if (!geocoded) {
-      alert('Impossible de géocoder cette adresse. Veuillez entrer manuellement les coordonnées.');
+    const validForms = ['COOPERATIVE', 'ENTREPRISE', 'ASSOCIATION'];
+    if (!validForms.includes(this.newForm.toUpperCase())) {
+      alert('Veuillez sélectionner un type de form valide.');
       return;
     }
-    lat = geocoded.lat;
-    lng = geocoded.lng;
+
+    let lat = this.newLatitude;
+    let lng = this.newLongitude;
+
+    if (lat === null || lng === null) {
+      const geocoded = await this.geocodeAddress(this.newAddress, this.newCity);
+      if (!geocoded) {
+        alert('Impossible de géocoder cette adresse. Veuillez entrer manuellement les coordonnées.');
+        return;
+      }
+      lat = geocoded.lat;
+      lng = geocoded.lng;
+    }
+
+    const newMarker: Marker = {
+      name: this.newMarkerName,
+      lat,
+      lng,
+      activity: this.newActivity,
+      address: this.newAddress,
+      city: this.newCity,
+      phone: this.newPhone,
+      fax: this.newFax,
+      email: this.newEmail,
+      rc: this.newRc,
+      ice: this.newIce,
+      addr_housenumber: '',
+      addr_street: '',
+      addr_postcode: this.newPostcode,
+      addr_province: this.newProvince,
+      addr_place: this.newPlace,
+      form: this.newForm.toUpperCase(),
+    };
+
+    this.http.post<{ id: string }>(this.apiUrl, newMarker).subscribe((res) => {
+      const createdMarker: Marker = { ...newMarker, id: res.id };
+      this.markers.push(createdMarker);
+      this.addMarkerToMap(createdMarker, true);
+      this.cdr.detectChanges();
+
+      this.newLatitude = null;
+      this.newLongitude = null;
+      this.newMarkerName = '';
+      this.newActivity = '';
+      this.newAddress = '';
+      this.newCity = '';
+      this.newPhone = '';
+      this.newFax = '';
+      this.newEmail = '';
+      this.newRc = '';
+      this.newIce = '';
+      this.newForm = '';
+    });
   }
-
-  const newMarker: Marker = {
-    name: this.newMarkerName,
-    lat,
-    lng,
-    activity: this.newActivity,
-    address: this.newAddress,
-    city: this.newCity,
-    phone: this.newPhone,
-    fax: this.newFax,
-    email: this.newEmail,
-    rc: this.newRc,
-    ice: this.newIce,
-    form: this.newForm.toUpperCase(),
-  };
-
-  this.http.post<{ id: string }>(this.apiUrl, newMarker).subscribe((res) => {
-    const createdMarker: Marker = { ...newMarker, id: res.id };
-    this.markers.push(createdMarker);
-    this.addMarkerToMap(createdMarker, true);
-    this.cdr.detectChanges();
-
-    // Reset form fields
-    this.newLatitude = null;
-    this.newLongitude = null;
-    this.newMarkerName = '';
-    this.newActivity = '';
-    this.newAddress = '';
-    this.newCity = '';
-    this.newPhone = '';
-    this.newFax = '';
-    this.newEmail = '';
-    this.newRc = '';
-    this.newIce = '';
-    this.newForm = '';
-  });
-}
-
 
   addMarkerToMap(marker: Marker, center: boolean = false): void {
     const iconsMap: Record<string, L.Icon> = {
-      COOPERATIVE: L.icon({
-        iconUrl: 'assets/blue.png',
-        shadowUrl: 'assets/leaf-shadow.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40],
-      }),
-      ENTREPRISE: L.icon({
-        iconUrl: 'assets/yellow.png',
-        shadowUrl: 'assets/leaf-shadow.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40],
-      }),
-      ASSOCIATION: L.icon({
-        iconUrl: 'assets/red.png',
-        shadowUrl: 'assets/leaf-shadow.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40],
-      }),
+      COOPERATIVE: L.icon({ iconUrl: 'assets/blue.png', shadowUrl: 'assets/leaf-shadow.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40] }),
+      ENTREPRISE: L.icon({ iconUrl: 'assets/yellow.png', shadowUrl: 'assets/leaf-shadow.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40] }),
+      ASSOCIATION: L.icon({ iconUrl: 'assets/red.png', shadowUrl: 'assets/leaf-shadow.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40] }),
     };
 
-    const icon = marker.form && iconsMap[marker.form.toUpperCase()]
-      ? iconsMap[marker.form.toUpperCase()]
-      : L.icon({
-          iconUrl: 'assets/marker-icon.png',
-          iconSize: [40, 40],
-          iconAnchor: [20, 40],
-          popupAnchor: [0, -40],
-        });
+    const icon = marker.form && iconsMap[marker.form.toUpperCase()] ? iconsMap[marker.form.toUpperCase()] : L.icon({
+      iconUrl: 'assets/marker-icon.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
+    });
 
     const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
       .addTo(this.map)
@@ -203,6 +188,9 @@ export class CartMapComponent implements AfterViewInit {
     if (marker.address) content += `Address: ${marker.address}<br/>`;
     if (marker.city) content += `City: ${marker.city}<br/>`;
     if (marker.phone) content += `Phone: ${marker.phone}<br/>`;
+    if (marker.addr_postcode) content += `Code Postal: ${marker.addr_postcode}<br/>`;
+    if (marker.addr_province) content += `Province: ${marker.addr_province}<br/>`;
+    if (marker.addr_place) content += `Lieu-dit: ${marker.addr_place}<br/>`;
     if (marker.fax) content += `Fax: ${marker.fax}<br/>`;
     if (marker.email) content += `Email: ${marker.email}<br/>`;
     if (marker.rc) content += `RC: ${marker.rc}<br/>`;
@@ -243,7 +231,6 @@ export class CartMapComponent implements AfterViewInit {
       (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-
         this.map.setView([lat, lng], 15);
 
         const userMarker = L.marker([lat, lng], {
@@ -253,10 +240,7 @@ export class CartMapComponent implements AfterViewInit {
             iconAnchor: [15, 30],
             popupAnchor: [0, -30],
           }),
-        })
-          .addTo(this.map)
-          .bindPopup('Vous êtes ici.')
-          .openPopup();
+        }).addTo(this.map).bindPopup('Vous êtes ici.').openPopup();
       },
       (error) => {
         alert('Impossible d’obtenir votre position : ' + error.message);
@@ -264,33 +248,21 @@ export class CartMapComponent implements AfterViewInit {
     );
   }
 
+  geocodeAddress(address: string, city: string): Promise<{ lat: number; lng: number } | null> {
+    const fullAddress = `${address}, ${city}`;
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`;
 
-geocodeAddress(address: string, city: string): Promise<{ lat: number; lng: number } | null> {
-  const fullAddress = `${address}, ${city}`;
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`;
-
-  return this.http.get<any[]>(url, {
-    headers: { 'Accept-Language': 'fr', 'User-Agent': 'MyMapApp/1.0' }
-  }).toPromise().then((data) => {
-    if (data && data.length > 0) {
-      return {
-        lat: parseFloat(data[0].lat),
-        lng: parseFloat(data[0].lon)
-      };
-    } else {
-      return null;
-    }
-  }).catch(() => null);
-}
-
-
-
-
-
-
-
-
-
-
-
+    return this.http.get<any[]>(url, {
+      headers: { 'Accept-Language': 'fr', 'User-Agent': 'MyMapApp/1.0' }
+    }).toPromise().then((data) => {
+      if (data && data.length > 0) {
+        return {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon)
+        };
+      } else {
+        return null;
+      }
+    }).catch(() => null);
+  }
 }
