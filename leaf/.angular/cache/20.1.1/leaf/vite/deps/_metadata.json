@@ -1,70 +1,76 @@
 {
-  "hash": "8666efe7",
-  "configHash": "088e2931",
+  "hash": "367eaa0e",
+  "configHash": "31490fc7",
   "lockfileHash": "f21055a7",
-  "browserHash": "738d5bab",
+  "browserHash": "a4455acf",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "52a2415a",
+      "fileHash": "33251165",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "37a4c78f",
+      "fileHash": "44c7dfd4",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "63c8c908",
+      "fileHash": "d6b22b40",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-      "fileHash": "a36659d1",
+      "fileHash": "dd79a354",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "02d5b0df",
+      "fileHash": "1474dc7c",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "7688ec4c",
+      "fileHash": "6a328bb4",
       "needsInterop": false
     },
     "leaflet": {
       "src": "../../../../../../node_modules/leaflet/dist/leaflet-src.js",
       "file": "leaflet.js",
-      "fileHash": "3af28044",
+      "fileHash": "a721a22a",
+      "needsInterop": true
+    },
+    "leaflet-routing-machine": {
+      "src": "../../../../../../../node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.js",
+      "file": "leaflet-routing-machine.js",
+      "fileHash": "8205ead1",
       "needsInterop": true
     }
   },
   "chunks": {
-    "chunk-EGMRX2QO": {
-      "file": "chunk-EGMRX2QO.js"
+    "chunk-FWO5HE5A": {
+      "file": "chunk-FWO5HE5A.js"
     },
-    "chunk-2DNKGNL5": {
-      "file": "chunk-2DNKGNL5.js"
+    "chunk-HKOO2I5R": {
+      "file": "chunk-HKOO2I5R.js"
     },
-    "chunk-GTZQB4PI": {
-      "file": "chunk-GTZQB4PI.js"
+    "chunk-PGSQXFS5": {
+      "file": "chunk-PGSQXFS5.js"
     },
     "chunk-RTPSSVGP": {
       "file": "chunk-RTPSSVGP.js"
     },
-    "chunk-FWTJ7EDF": {
-      "file": "chunk-FWTJ7EDF.js"
+    "chunk-SHC2JGHC": {
+      "file": "chunk-SHC2JGHC.js"
     },
-    "chunk-H2SRQSE4": {
-      "file": "chunk-H2SRQSE4.js"
+    "chunk-OCBFZOLU": {
+      "file": "chunk-OCBFZOLU.js"
     }
   }
 }
