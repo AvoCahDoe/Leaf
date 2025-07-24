@@ -3,6 +3,7 @@ from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson import ObjectId
+import requests
 import os
 
 from dotenv import load_dotenv
@@ -28,6 +29,34 @@ except Exception as e:
 # Access your database and collection
 db = client['map_db']
 markers_collection = db['markers']
+
+
+
+
+#get coords
+def geocode_address(address, city):
+    full_address = f"{address}, {city}"
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {
+        'q': full_address,
+        'format': 'json',
+        'limit': 1
+    }
+    headers = {
+        'User-Agent': 'MyMapApp/1.0'
+    }
+
+    response = requests.get(url, params=params, headers=headers)
+    data = response.json()
+    
+    if data:
+        return float(data[0]['lat']), float(data[0]['lon'])
+    return None, None    
+
+
+
+
+
 
 # Serialize MongoDB documents
 def serialize_marker(marker):
@@ -57,10 +86,17 @@ def get_markers():
 @app.route('/markers', methods=['POST'])
 def add_marker():
     data = request.json
+    lat = data.get('lat')
+    lng = data.get('lng')
+
+    # If coordinates are missing, try to get them via geocoding
+    if not lat or not lng:
+        lat, lng = geocode_address(data.get('address'), data.get('city'))
+
     marker = {
         'name': data.get('name'),
-        'lat': data.get('lat'),
-        'lng': data.get('lng'),
+        'lat': lat,
+        'lng': lng,
         'activity': data.get('activity'),
         'address': data.get('address'),
         'city': data.get('city'),
@@ -94,6 +130,11 @@ def update_marker(marker_id):
     if result.matched_count == 1:
         return jsonify({'status': 'updated'}), 200
     return jsonify({'error': 'Marker not found'}), 404
+
+    
+
+
+
 
 # Run Flask app
 if __name__ == '__main__':

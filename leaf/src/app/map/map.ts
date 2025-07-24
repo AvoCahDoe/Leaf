@@ -27,20 +27,12 @@ interface Marker {
   templateUrl: './map.html',
   styleUrls: ['./map.scss']
 })
-
-
-
-
-
-
-
-
 export class CartMapComponent implements AfterViewInit {
   map!: L.Map;
   showGestionModal = false;
 
-  newLatitude = 34.020882;
-  newLongitude = -6.841650;
+  newLatitude: number | null = null;
+  newLongitude: number | null = null;
   newMarkerName = '';
   newActivity = '';
   newAddress = '';
@@ -50,7 +42,7 @@ export class CartMapComponent implements AfterViewInit {
   newEmail = '';
   newRc = '';
   newIce = '';
-  newForm = ''; // selected type
+  newForm = '';
 
   isLoading = false;
   markers: Marker[] = [];
@@ -99,49 +91,63 @@ export class CartMapComponent implements AfterViewInit {
     });
   }
 
-  addMarker(): void {
-    const validForms = ['COOPERATIVE', 'ENTREPRISE', 'ASSOCIATION'];
-    if (!validForms.includes(this.newForm.toUpperCase())) {
-      alert('Veuillez sélectionner un type de form valide.');
+  async addMarker(): Promise<void> {
+  const validForms = ['COOPERATIVE', 'ENTREPRISE', 'ASSOCIATION'];
+  if (!validForms.includes(this.newForm.toUpperCase())) {
+    alert('Veuillez sélectionner un type de form valide.');
+    return;
+  }
+
+  let lat = this.newLatitude;
+  let lng = this.newLongitude;
+
+  if (lat === null || lng === null) {
+    const geocoded = await this.geocodeAddress(this.newAddress, this.newCity);
+    if (!geocoded) {
+      alert('Impossible de géocoder cette adresse. Veuillez entrer manuellement les coordonnées.');
       return;
     }
-
-    const newMarker: Marker = {
-      name: this.newMarkerName,
-      lat: this.newLatitude,
-      lng: this.newLongitude,
-      activity: this.newActivity,
-      address: this.newAddress,
-      city: this.newCity,
-      phone: this.newPhone,
-      fax: this.newFax,
-      email: this.newEmail,
-      rc: this.newRc,
-      ice: this.newIce,
-      form: this.newForm.toUpperCase(),
-    };
-
-    this.http.post<{ id: string }>(this.apiUrl, newMarker).subscribe((res) => {
-      const createdMarker: Marker = { ...newMarker, id: res.id };
-      this.markers.push(createdMarker);
-      this.addMarkerToMap(createdMarker, true);
-      this.cdr.detectChanges();
-
-      // Reset inputs
-      this.newLatitude = 34.020882;
-      this.newLongitude = -6.841650;
-      this.newMarkerName = '';
-      this.newActivity = '';
-      this.newAddress = '';
-      this.newCity = '';
-      this.newPhone = '';
-      this.newFax = '';
-      this.newEmail = '';
-      this.newRc = '';
-      this.newIce = '';
-      this.newForm = '';
-    });
+    lat = geocoded.lat;
+    lng = geocoded.lng;
   }
+
+  const newMarker: Marker = {
+    name: this.newMarkerName,
+    lat,
+    lng,
+    activity: this.newActivity,
+    address: this.newAddress,
+    city: this.newCity,
+    phone: this.newPhone,
+    fax: this.newFax,
+    email: this.newEmail,
+    rc: this.newRc,
+    ice: this.newIce,
+    form: this.newForm.toUpperCase(),
+  };
+
+  this.http.post<{ id: string }>(this.apiUrl, newMarker).subscribe((res) => {
+    const createdMarker: Marker = { ...newMarker, id: res.id };
+    this.markers.push(createdMarker);
+    this.addMarkerToMap(createdMarker, true);
+    this.cdr.detectChanges();
+
+    // Reset form fields
+    this.newLatitude = null;
+    this.newLongitude = null;
+    this.newMarkerName = '';
+    this.newActivity = '';
+    this.newAddress = '';
+    this.newCity = '';
+    this.newPhone = '';
+    this.newFax = '';
+    this.newEmail = '';
+    this.newRc = '';
+    this.newIce = '';
+    this.newForm = '';
+  });
+}
+
 
   addMarkerToMap(marker: Marker, center: boolean = false): void {
     const iconsMap: Record<string, L.Icon> = {
@@ -227,40 +233,54 @@ export class CartMapComponent implements AfterViewInit {
     return marker.id ?? `${marker.lat},${marker.lng}`;
   }
 
+  centerOnUserLocation(): void {
+    if (!navigator.geolocation) {
+      alert('La géolocalisation n’est pas supportée par votre navigateur.');
+      return;
+    }
 
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
 
-centerOnUserLocation(): void {
-  if (!navigator.geolocation) {
-    alert('La géolocalisation n’est pas supportée par votre navigateur.');
-    return;
+        this.map.setView([lat, lng], 15);
+
+        const userMarker = L.marker([lat, lng], {
+          icon: L.icon({
+            iconUrl: 'assets/UserIcon.png',
+            iconSize: [65, 65],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30],
+          }),
+        })
+          .addTo(this.map)
+          .bindPopup('Vous êtes ici.')
+          .openPopup();
+      },
+      (error) => {
+        alert('Impossible d’obtenir votre position : ' + error.message);
+      }
+    );
   }
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
 
-      this.map.setView([lat, lng], 15);
+geocodeAddress(address: string, city: string): Promise<{ lat: number; lng: number } | null> {
+  const fullAddress = `${address}, ${city}`;
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`;
 
-
-      const userMarker = L.marker([lat, lng], {
-        icon: L.icon({
-          iconUrl: 'assets/UserIcon.png', // user icon path (add ltr)
-          iconSize: [65, 65],
-          iconAnchor: [15, 30],
-          popupAnchor: [0, -30],
-        }),
-      })
-        .addTo(this.map)
-        .bindPopup('Vous êtes ici.')
-        .openPopup();
-    },
-
-    // incase user refused access
-    (error) => {
-      alert('Impossible d’obtenir votre position : ' + error.message);
+  return this.http.get<any[]>(url, {
+    headers: { 'Accept-Language': 'fr', 'User-Agent': 'MyMapApp/1.0' }
+  }).toPromise().then((data) => {
+    if (data && data.length > 0) {
+      return {
+        lat: parseFloat(data[0].lat),
+        lng: parseFloat(data[0].lon)
+      };
+    } else {
+      return null;
     }
-  );
+  }).catch(() => null);
 }
 
 
@@ -273,13 +293,4 @@ centerOnUserLocation(): void {
 
 
 
-
-
-
-
-
-
 }
-
-
-
