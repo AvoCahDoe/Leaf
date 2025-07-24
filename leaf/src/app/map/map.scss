@@ -1,187 +1,194 @@
- /* Container fills viewport height */
-  .map-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f2f5;
-    color: #333;
-  }
+/* Container fills viewport height */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+}
 
-  /* Leaflet map fills container */
-  #map {
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    border-radius: 8px;
-    box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
-  }
+/* Leaflet map fills container */
+#map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+}
 
-  /* Toggle button styling */
-  .modal-toggle {
-    position: absolute;
-    top: 10px;
-    left: 50px;
-    z-index: 1100;
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    cursor: pointer;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: large;
-    box-shadow: 0 4px 8px rgb(0 123 255 / 0.4);
-    transition: background-color 0.3s ease;
-  }
-  .modal-toggle:hover {
-    background: #0056b3;
-  }
+/* Button group container with flex layout */
+.button-group {
+  position: absolute;
+  top: 10px;
+  left: 70px;
+  z-index: 1100;
+  display: flex;
+  gap: 12px;
+}
 
-  /* Modal window */
-  .modal {
-    position: absolute;
-    top: 60px;
-    left: 15px;
-    background: white;
-    padding: 20px 24px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    z-index: 1100;
-    width: 480px;
-    max-height: 85vh;
-    overflow-y: auto;
-    border: solid rgb(3, 3, 3);
-  }
+/* Shared button style */
+.button-group button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgb(0 123 255 / 0.4);
+  transition: background-color 0.3s ease;
+}
 
-  /* Headings */
-  .modal h3,
-  .modal h4 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #212529;
-    font-weight: 700;
-  }
+.button-group button:hover {
+  background: #0056b3;
+}
 
-  /* Label + input styling */
-  .modal label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #444;
-  }
+/* Modal window */
+.modal {
+  position: absolute;
+  top: 60px;
+  left: 15px;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1100;
+  width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border: solid rgb(3, 3, 3);
+}
 
-  .modal input,
-  .modal select {
-    width: 100%;
-    padding: 8px 10px;
-    margin-bottom: 14px;
-    border: 1.8px solid #ced4da;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    font-family: inherit;
-  }
+/* Headings */
+.modal h3,
+.modal h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #212529;
+  font-weight: 700;
+}
 
-  .modal input:focus,
-  .modal select:focus {
-    border-color: #80bdff;
-    outline: none;
-    box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
-  }
+/* Label + input styling */
+.modal label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #444;
+}
 
-  /* Add button */
-  .btn-add {
-    width: 100%;
-    background-color: #28a745;
-    border: none;
-    color: white;
-    font-size: 16px;
-    font-weight: 700;
-    padding: 10px 0;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 5px 10px rgba(40, 167, 69, 0.5);
-    transition: background-color 0.3s ease;
-    margin-bottom: 18px;
-  }
-  .btn-add:hover {
-    background-color: #218838;
-  }
+.modal input,
+.modal select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 14px;
+  border: 1.8px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: inherit;
+}
 
-  /* Loading overlay */
-  .loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: 700;
-    z-index: 1200;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 14px 28px;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-    font-size: 18px;
-    color: #007bff;
-  }
+.modal input:focus,
+.modal select:focus {
+  border-color: #80bdff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+}
 
-  /* Table styling */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 12px;
-    font-size: 14px;
-  }
+/* Add button */
+.btn-add {
+  width: 100%;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 5px 10px rgba(40, 167, 69, 0.5);
+  transition: background-color 0.3s ease;
+  margin-bottom: 18px;
+}
+.btn-add:hover {
+  background-color: #218838;
+}
 
-  th,
-  td {
-    border: 1px solid #dee2e6;
-    padding: 10px 12px;
-    text-align: center;
-  }
+/* Loading overlay */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 700;
+  z-index: 1200;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 14px 28px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+  font-size: 18px;
+  color: #007bff;
+}
 
-  th {
-    background-color: #007bff;
-    color: white;
-    font-weight: 700;
-  }
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 14px;
+}
 
-  tbody tr:nth-child(even) {
-    background-color: #f8f9fa;
-  }
+th,
+td {
+  border: 1px solid #dee2e6;
+  padding: 10px 12px;
+  text-align: center;
+}
 
-  tbody tr:hover {
-    background-color: #e9ecef;
-    cursor: pointer;
-  }
+th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 700;
+}
 
-  /* Buttons inside table */
-  .btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.25s ease;
-    user-select: none;
-  }
+tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
 
-  .btn-center {
-    background-color: #17a2b8;
-    color: white;
-    margin-right: 6px;
-    box-shadow: 0 3px 6px rgba(23, 162, 184, 0.4);
-  }
-  .btn-center:hover {
-    background-color: #117a8b;
-  }
+tbody tr:hover {
+  background-color: #e9ecef;
+  cursor: pointer;
+}
 
-  .btn-delete {
-    background-color: #dc3545;
-    color: white;
-    box-shadow: 0 3px 6px rgba(220, 53, 69, 0.4);
-  }
-  .btn-delete:hover {
-    background-color: #a71d2a;
-  }
+/* Buttons inside table */
+.btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  user-select: none;
+}
+
+.btn-center {
+  background-color: #17a2b8;
+  color: white;
+  margin-right: 6px;
+  box-shadow: 0 3px 6px rgba(23, 162, 184, 0.4);
+}
+.btn-center:hover {
+  background-color: #117a8b;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+  box-shadow: 0 3px 6px rgba(220, 53, 69, 0.4);
+}
+.btn-delete:hover {
+  background-color: #a71d2a;
+}

@@ -1,5 +1,9 @@
 <div class="map-container">
+  <div class="button-group">
   <button class="modal-toggle" (click)="toggleGestionModal()">Gestion de markers</button>
+  <button class="btn-my-coords" (click)="centerOnUserLocation()"> Mes Coordonnées</button>
+</div>
+
 
   <div *ngIf="isLoading" class="loading">Loading markers...</div>
   <div id="map" style="height: 100%;"></div>

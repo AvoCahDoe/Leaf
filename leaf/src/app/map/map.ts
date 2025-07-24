@@ -27,6 +27,14 @@ interface Marker {
   templateUrl: './map.html',
   styleUrls: ['./map.scss']
 })
+
+
+
+
+
+
+
+
 export class CartMapComponent implements AfterViewInit {
   map!: L.Map;
   showGestionModal = false;
@@ -218,4 +226,60 @@ export class CartMapComponent implements AfterViewInit {
   trackById(index: number, marker: Marker): string {
     return marker.id ?? `${marker.lat},${marker.lng}`;
   }
+
+
+
+centerOnUserLocation(): void {
+  if (!navigator.geolocation) {
+    alert('La géolocalisation n’est pas supportée par votre navigateur.');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      this.map.setView([lat, lng], 15);
+
+
+      const userMarker = L.marker([lat, lng], {
+        icon: L.icon({
+          iconUrl: 'assets/UserIcon.png', // user icon path (add ltr)
+          iconSize: [65, 65],
+          iconAnchor: [15, 30],
+          popupAnchor: [0, -30],
+        }),
+      })
+        .addTo(this.map)
+        .bindPopup('Vous êtes ici.')
+        .openPopup();
+    },
+
+    // incase user refused access
+    (error) => {
+      alert('Impossible d’obtenir votre position : ' + error.message);
+    }
+  );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
