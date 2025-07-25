@@ -105,19 +105,30 @@ Leaf-App/
 
 ```json
 {
-  "id": "unique-id",
-  "name": "Nom du lieu",
-  "lat": 34.02,
-  "lng": -6.84,
-  "activity": "Artisanat",
-  "address": "123 Rue Exemple",
-  "city": "Rabat",
-  "phone": "0600000000",
-  "fax": "0537000000",
-  "email": "exemple@mail.com",
+  "_id": {
+    "$oid": "xxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "name": "Salam-Entreprise",
+  "lat": {
+    "$numberDouble": "30.4012452"
+  },
+  "lng": {
+    "$numberDouble": "-9.5489513"
+  },
+  "activity": "Restaurant",
+  "address": "Salam",
+  "city": "Agadir",
+  "phone": "0643653475",
+  "fax": "0634862365",
+  "email": "elboubkraoui.farid@gmail.com",
   "rc": "RC123",
   "ice": "ICE456",
-  "form": "COOPERATIVE"
+  "form": "ASSOCIATION",
+  "addr_housenumber": "",
+  "addr_street": "",
+  "addr_postcode": "80 000",
+  "addr_province": "Souss Massa",
+  "addr_place": ""
 }
 ```
 
