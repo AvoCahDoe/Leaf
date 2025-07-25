@@ -5,17 +5,13 @@ from pymongo.server_api import ServerApi
 from bson import ObjectId
 import requests
 import os
-
 from dotenv import load_dotenv
-
-
 
 app = Flask(__name__)
 CORS(app)
 
-# MongoDB Atlas connection
+# Atlas 
 load_dotenv()
-
 mongo_uri = os.environ.get("MONGO_URI")
 print("Mongo URI:", mongo_uri)
 client = MongoClient(mongo_uri, server_api=ServerApi('1'))
@@ -26,14 +22,11 @@ try:
 except Exception as e:
     print(" Failed to connect to MongoDB Atlas:", e)
 
-# Access your database and collection
+# Access database 
 db = client['map_db']
 markers_collection = db['markers']
 
-
-
-
-#get coords
+# Geocode  (OpenStreetMap)
 def geocode_address(address, city):
     full_address = f"{address}, {city}"
     url = "https://nominatim.openstreetmap.org/search"
@@ -53,12 +46,7 @@ def geocode_address(address, city):
         return float(data[0]['lat']), float(data[0]['lon'])
     return None, None    
 
-
-
-
-
-
-# Serialize MongoDB documents
+# Se MongoDB 
 def serialize_marker(marker):
     return {
         'id': str(marker['_id']),
@@ -74,22 +62,27 @@ def serialize_marker(marker):
         'rc': marker.get('rc'),
         'ice': marker.get('ice'),
         'form': marker.get('form'),
+        'addr_housenumber': marker.get('addr_housenumber'),
+        'addr_street': marker.get('addr_street'),
+        'addr_postcode': marker.get('addr_postcode'),
+        'addr_province': marker.get('addr_province'),
+        'addr_place': marker.get('addr_place'),
     }
 
-# GET all markers
+# GET 
 @app.route('/markers', methods=['GET'])
 def get_markers():
     markers = list(markers_collection.find())
     return jsonify([serialize_marker(m) for m in markers])
 
-# POST a new marker
+# POST 
 @app.route('/markers', methods=['POST'])
 def add_marker():
     data = request.json
     lat = data.get('lat')
     lng = data.get('lng')
 
-    # If coordinates are missing, try to get them via geocoding
+    # if lat/lng missing
     if not lat or not lng:
         lat, lng = geocode_address(data.get('address'), data.get('city'))
 
@@ -106,11 +99,16 @@ def add_marker():
         'rc': data.get('rc'),
         'ice': data.get('ice'),
         'form': data.get('form'),
+        'addr_housenumber': data.get('addr_housenumber'),
+        'addr_street': data.get('addr_street'),
+        'addr_postcode': data.get('addr_postcode'),
+        'addr_province': data.get('addr_province'),
+        'addr_place': data.get('addr_place'),
     }
     result = markers_collection.insert_one(marker)
     return jsonify({'id': str(result.inserted_id)}), 201
 
-# DELETE a marker
+# DELETE 
 @app.route('/markers/<marker_id>', methods=['DELETE'])
 def delete_marker(marker_id):
     result = markers_collection.delete_one({'_id': ObjectId(marker_id)})
@@ -118,7 +116,7 @@ def delete_marker(marker_id):
         return jsonify({'status': 'deleted'}), 200
     return jsonify({'error': 'Marker not found'}), 404
 
-# PUT (update) a marker
+# PUT 
 @app.route('/markers/<marker_id>', methods=['PUT'])
 def update_marker(marker_id):
     data = request.json
@@ -130,11 +128,6 @@ def update_marker(marker_id):
     if result.matched_count == 1:
         return jsonify({'status': 'updated'}), 200
     return jsonify({'error': 'Marker not found'}), 404
-
-    
-
-
-
 
 # Run Flask app
 if __name__ == '__main__':
