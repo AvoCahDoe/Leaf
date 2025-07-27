@@ -39,6 +39,7 @@ export class CartMapComponent implements AfterViewInit {
 
   showGestionModal = false;
   showRoutingInputs = false;
+  showFilterModal = false; //filter modal
 
   // Form data
   newLatitude: number | null = null;
@@ -65,6 +66,12 @@ export class CartMapComponent implements AfterViewInit {
   markers: Marker[] = [];
   leafletMarkers: { [id: string]: L.Marker } = {};
   markersVisible: boolean = true;
+
+  // Filter props
+  filterName = '';
+  filterForm = '';
+  filterIce = '';
+  filteredMarkers: Marker[] = [];
 
   currentRouteInfo?: { distanceKm: string; timeMin: number };
 
@@ -100,6 +107,14 @@ export class CartMapComponent implements AfterViewInit {
     this.showRoutingInputs = !this.showRoutingInputs;
   }
 
+
+  //  * Toggle filter modal visibility
+
+  toggleFilterModal(): void {
+    this.showFilterModal = !this.showFilterModal;
+    setTimeout(() => this.map.invalidateSize(), 300);
+  }
+
   private initMap(): void {
     this.map = L.map('map').setView([34.020882, -6.841650], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -111,6 +126,7 @@ export class CartMapComponent implements AfterViewInit {
     this.isLoading = true;
     this.http.get<Marker[]>(this.apiUrl).subscribe((data) => {
       this.markers = data;
+      this.filteredMarkers = []; // Initialize filtered markers
       for (const marker of data) {
         this.addMarkerToMap(marker);
       }
@@ -163,6 +179,12 @@ export class CartMapComponent implements AfterViewInit {
       const createdMarker: Marker = { ...newMarker, id: res.id };
       this.markers.push(createdMarker);
       this.addMarkerToMap(createdMarker, true);
+
+      // Reapply filters if any are active
+      if (this.filterName || this.filterForm || this.filterIce) {
+        this.applyFilters();
+      }
+
       this.cdr.detectChanges();
 
       // Reset form
@@ -195,17 +217,22 @@ export class CartMapComponent implements AfterViewInit {
       popupAnchor: [0, -40],
     });
 
-  const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
-    .bindPopup(this.generatePopupContent(marker));
+    const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
+      .bindPopup(this.generatePopupContent(marker));
 
-  // Only add to map if markers are visible
-  if (this.markersVisible) {
-    leafletMarker.addTo(this.map);
-  }
+    // Only add to map if markers are visible
+    if (this.markersVisible) {
+      leafletMarker.addTo(this.map);
+    }
 
-  if (marker.id) {
-    this.leafletMarkers[marker.id] = leafletMarker;
-  }
+    if (marker.id) {
+      this.leafletMarkers[marker.id] = leafletMarker;
+    }
+
+    if (center) {
+      this.map.setView([marker.lat, marker.lng], this.map.getZoom());
+      leafletMarker.openPopup();
+    }
   }
 
   generatePopupContent(marker: Marker): string {
@@ -239,6 +266,12 @@ export class CartMapComponent implements AfterViewInit {
       this.map.removeLayer(this.leafletMarkers[marker.id!]);
       this.markers.splice(index, 1);
       delete this.leafletMarkers[marker.id!];
+
+      // Reapply filters if any are active
+      if (this.filterName || this.filterForm || this.filterIce) {
+        this.applyFilters();
+      }
+
       this.cdr.detectChanges();
     });
   }
@@ -249,7 +282,7 @@ export class CartMapComponent implements AfterViewInit {
 
   centerOnUserLocation(): void {
     if (!navigator.geolocation) {
-      alert('La géolocalisation n’est pas supportée par votre navigateur.');
+      alert('La géolocalisation nest pas supportée par votre navigateur.');
       return;
     }
 
@@ -270,7 +303,7 @@ export class CartMapComponent implements AfterViewInit {
         }).addTo(this.map).bindPopup('Vous êtes ici.').openPopup();
       },
       (error) => {
-        alert('Impossible d’obtenir votre position : ' + error.message);
+        alert('Impossible dobtenir votre position : ' + error.message);
       }
     );
   }
@@ -334,22 +367,80 @@ export class CartMapComponent implements AfterViewInit {
   }
 
   toggleMarkersVisibility(): void {
-  this.markersVisible = !this.markersVisible;
+    this.markersVisible = !this.markersVisible;
 
-  // Hide/show all markers on the map
-  Object.values(this.leafletMarkers).forEach(marker => {
-    if (this.markersVisible) {
-      marker.addTo(this.map);
-    } else {
+    Object.values(this.leafletMarkers).forEach(marker => {
+      if (this.markersVisible) {
+        marker.addTo(this.map);
+      } else {
+        this.map.removeLayer(marker);
+      }
+    });
+
+    this.cdr.detectChanges();
+  }
+
+
+  //  * Apply filters to markers based on name, form, and ICE
+
+  applyFilters(): void {
+    this.filteredMarkers = this.markers.filter(marker => {
+      // Filter by name (case insensitive)
+      const nameMatch = !this.filterName ||
+        marker.name.toLowerCase().includes(this.filterName.toLowerCase());
+
+      // Filter by form (exact match)
+      const formMatch = !this.filterForm ||
+        marker.form?.toUpperCase() === this.filterForm.toUpperCase();
+
+      // Filter by ICE (case insensitive partial match)
+      const iceMatch = !this.filterIce ||
+        (marker.ice && marker.ice.toLowerCase().includes(this.filterIce.toLowerCase()));
+
+      return nameMatch && formMatch && iceMatch;
+    });
+
+    // Update markers visibility on map
+    this.updateMarkersVisibility();
+  }
+
+  //  * Update markers visibility on the map based on filters
+
+  updateMarkersVisibility(): void {
+    // Hide all markers first
+    Object.values(this.leafletMarkers).forEach(marker => {
       this.map.removeLayer(marker);
+    });
+
+    // Show only filtered markers if filters are activeotherwise show all
+    const markersToShow = (this.filterName || this.filterForm || this.filterIce) ?
+      this.filteredMarkers : this.markers;
+
+    markersToShow.forEach(marker => {
+      if (marker.id && this.leafletMarkers[marker.id] && this.markersVisible) {
+        this.map.addLayer(this.leafletMarkers[marker.id]);
+      }
+    });
+  }
+
+
+  //  * Clear all filters and show all markers
+
+  clearFilters(): void {
+    this.filterName = '';
+    this.filterForm = '';
+    this.filterIce = '';
+    this.filteredMarkers = [];
+
+    // Show all markers
+    this.updateMarkersVisibility();
+  }
+
+  //  * Get count of filtered markers for display
+  getFilteredMarkersCount(): number {
+    if (this.filterName || this.filterForm || this.filterIce) {
+      return this.filteredMarkers.length;
     }
-  });
-
-  this.cdr.detectChanges();
-}
-
-
-
-
-
+    return this.markers.length;
+  }
 }
