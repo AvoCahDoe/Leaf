@@ -64,6 +64,7 @@ export class CartMapComponent implements AfterViewInit {
   isLoading = false;
   markers: Marker[] = [];
   leafletMarkers: { [id: string]: L.Marker } = {};
+  markersVisible: boolean = true;
 
   currentRouteInfo?: { distanceKm: string; timeMin: number };
 
@@ -194,18 +195,17 @@ export class CartMapComponent implements AfterViewInit {
       popupAnchor: [0, -40],
     });
 
-    const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
-      .addTo(this.map)
-      .bindPopup(this.generatePopupContent(marker));
+  const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
+    .bindPopup(this.generatePopupContent(marker));
 
-    if (marker.id) {
-      this.leafletMarkers[marker.id] = leafletMarker;
-    }
+  // Only add to map if markers are visible
+  if (this.markersVisible) {
+    leafletMarker.addTo(this.map);
+  }
 
-    if (center) {
-      this.map.setView([marker.lat, marker.lng], this.map.getZoom());
-      leafletMarker.openPopup();
-    }
+  if (marker.id) {
+    this.leafletMarkers[marker.id] = leafletMarker;
+  }
   }
 
   generatePopupContent(marker: Marker): string {
@@ -332,4 +332,24 @@ export class CartMapComponent implements AfterViewInit {
       }
     }).catch(() => null);
   }
+
+  toggleMarkersVisibility(): void {
+  this.markersVisible = !this.markersVisible;
+
+  // Hide/show all markers on the map
+  Object.values(this.leafletMarkers).forEach(marker => {
+    if (this.markersVisible) {
+      marker.addTo(this.map);
+    } else {
+      this.map.removeLayer(marker);
+    }
+  });
+
+  this.cdr.detectChanges();
+}
+
+
+
+
+
 }

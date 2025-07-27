@@ -1,4 +1,3 @@
-<!-- Modern Tailwind-designed map component -->
 <div class="relative w-full h-screen overflow-hidden bg-gray-50 font-sans">
 
   <!-- Header ila bghti
@@ -25,6 +24,26 @@
       <span class="hidden sm:inline">Gestion markers</span>
     </button>
 
+
+
+
+ <button
+      (click)="toggleMarkersVisibility()"
+      [class]="markersVisible ?
+        'group flex items-center gap-3 px-4 py-3 bg-orange-500/95 backdrop-blur-sm text-white rounded-xl shadow-lg border border-orange-400/20 hover:bg-orange-600 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 text-sm font-medium' :
+        'group flex items-center gap-3 px-4 py-3 bg-white/95 backdrop-blur-sm text-gray-800 rounded-xl shadow-lg border border-white/20 hover:bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 text-sm font-medium'">
+      <!-- Show/Hide Icon based on state -->
+      <svg *ngIf="markersVisible" class="w-5 h-5 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L12 12m0 0l3.12 3.12M12 12l3.12-3.12m0 0l4.243-4.243"/>
+      </svg>
+      <svg *ngIf="!markersVisible" class="w-5 h-5 text-orange-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+      </svg>
+      <span class="hidden sm:inline">
+        {{ markersVisible ? 'Masquer' : 'Afficher' }} markers
+      </span>
+    </button>
     <button
       (click)="centerOnUserLocation()"
       class="group flex items-center gap-3 px-4 py-3 bg-white/95 backdrop-blur-sm text-gray-800 rounded-xl shadow-lg border border-white/20 hover:bg-white hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 text-sm font-medium">
@@ -144,12 +163,81 @@
                 name="city"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white appearance-none bg-[url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3e%3c/svg%3e')] bg-[position:right_0.5rem_center] bg-no-repeat bg-[size:1.5em_1.5em] pr-10">
                 <option value="">-- Choisir --</option>
-                <option value="Agadir">Agadir</option>
-                <option value="Casablanca">Casablanca</option>
-                <option value="Rabat">Rabat</option>
-                <option value="Fès">Fès</option>
-                <option value="Marrakech">Marrakech</option>
-                <!-- Add more cities as needed -->
+            <option value="Agadir">Agadir</option>
+            <option value="Agadir Ida Ou Tanane">Agadir Ida Ou Tanane</option>
+            <option value="Al Haouz">Al Haouz</option>
+            <option value="Assa-Zag">Assa-Zag</option>
+            <option value="Azilal">Azilal</option>
+            <option value="Ben Slimane">Ben Slimane</option>
+            <option value="Béni Mellal">Béni Mellal</option>
+            <option value="Berkane">Berkane</option>
+            <option value="Berrechid">Berrechid</option>
+            <option value="Boujdour">Boujdour</option>
+            <option value="Boulemane">Boulemane</option>
+            <option value="Casablanca">Casablanca</option>
+            <option value="Chefchaouen">Chefchaouen</option>
+            <option value="Chichaoua">Chichaoua</option>
+            <option value="Chtouka Ait Baha">Chtouka Ait Baha</option>
+            <option value="Driouch">Driouch</option>
+            <option value="El Hajeb">El Hajeb</option>
+            <option value="El Jadida">El Jadida</option>
+            <option value="El Kelaa Sraghna">El Kelaa Sraghna</option>
+            <option value="Errachidia">Errachidia</option>
+            <option value="Es Semara">Es Semara</option>
+            <option value="Essaouira">Essaouira</option>
+            <option value="Fahs-Anjra">Fahs-Anjra</option>
+            <option value="Fès">Fès</option>
+            <option value="Figuig">Figuig</option>
+            <option value="Fquih Ben Salah">Fquih Ben Salah</option>
+            <option value="Guelmim">Guelmim</option>
+            <option value="Guercif">Guercif</option>
+            <option value="Ifrane">Ifrane</option>
+            <option value="Inezgane Ait Melloul">Inezgane Ait Melloul</option>
+            <option value="Jrada">Jrada</option>
+            <option value="Kénitra">Kénitra</option>
+            <option value="Khemisset">Khemisset</option>
+            <option value="Khénifra">Khénifra</option>
+            <option value="Khouribga">Khouribga</option>
+            <option value="Laâyoune">Laâyoune</option>
+            <option value="Larache">Larache</option>
+            <option value="M'Diq-Fnideq">M'Diq-Fnideq</option>
+            <option value="Mediouna">Mediouna</option>
+            <option value="Meknès">Meknès</option>
+            <option value="Midelt">Midelt</option>
+            <option value="Mohammedia">Mohammedia</option>
+            <option value="Moulay Yacoub">Moulay Yacoub</option>
+            <option value="Nador">Nador</option>
+            <option value="Nouaceur">Nouaceur</option>
+            <option value="Oujda">Oujda</option>
+            <option value="Oujda Angad">Oujda Angad</option>
+            <option value="Ouezzane">Ouezzane</option>
+            <option value="Ouarzazate">Ouarzazate</option>
+            <option value="Oued Eddahab">Oued Eddahab</option>
+            <option value="Rabat">Rabat</option>
+            <option value="Rehamna">Rehamna</option>
+            <option value="Safi">Safi</option>
+            <option value="Salé">Salé</option>
+            <option value="Settat">Settat</option>
+            <option value="Sefrou">Sefrou</option>
+            <option value="Sidi Bennour">Sidi Bennour</option>
+            <option value="Sidi Ifni">Sidi Ifni</option>
+            <option value="Sidi Kacem">Sidi Kacem</option>
+            <option value="Sidi Slimane">Sidi Slimane</option>
+            <option value="Skhirate-Temara">Skhirate-Temara</option>
+            <option value="Tan-Tan">Tan-Tan</option>
+            <option value="Taounate">Taounate</option>
+            <option value="Taourirt">Taourirt</option>
+            <option value="Tarfaya">Tarfaya</option>
+            <option value="Taroudant">Taroudant</option>
+            <option value="Tata">Tata</option>
+            <option value="Taza">Taza</option>
+            <option value="Tétouan">Tétouan</option>
+            <option value="Tinghir">Tinghir</option>
+            <option value="Tiznit">Tiznit</option>
+            <option value="Tanger">Tanger</option>
+            <option value="Tanger-Asilah">Tanger-Asilah</option>
+            <option value="Youssoufia">Youssoufia</option>
+            <option value="Zagora">Zagora</option>
               </select>
             </div>
 
@@ -169,11 +257,18 @@
                 name="province"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white appearance-none bg-[url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3e%3c/svg%3e')] bg-[position:right_0.5rem_center] bg-no-repeat bg-[size:1.5em_1.5em] pr-10">
                 <option value="">-- Choisir --</option>
-                <option value="Casablanca-Settat">Casablanca-Settat</option>
-                <option value="Rabat-Salé-Kénitra">Rabat-Salé-Kénitra</option>
-                <option value="Fès-Meknès">Fès-Meknès</option>
-                <option value="Marrakech-Safi">Marrakech-Safi</option>
-                <!-- Add more provinces as needed -->
+     <option value="Béni Mellal-Khénifra">Béni Mellal-Khénifra</option>
+            <option value="Casablanca-Settat">Casablanca-Settat</option>
+            <option value="Dakhla-Oued Ed-Dahab">Dakhla-Oued Ed-Dahab</option>
+            <option value="Drâa-Tafilalet">Drâa-Tafilalet</option>
+            <option value="Fès-Meknès">Fès-Meknès</option>
+            <option value="Guelmim-Oued Noun">Guelmim-Oued Noun</option>
+            <option value="Laâyoune-Sakia El Hamra">Laâyoune-Sakia El Hamra</option>
+            <option value="Marrakech-Safi">Marrakech-Safi</option>
+            <option value="Oriental">Oriental</option>
+            <option value="Rabat-Salé-Kénitra">Rabat-Salé-Kénitra</option>
+            <option value="Souss Massa">Souss Massa</option>
+            <option value="Tanger-Tétouan-Al Hoceima">Tanger-Tétouan-Al Hoceima</option>
               </select>
             </div>
 
@@ -184,7 +279,7 @@
                 [(ngModel)]="newLatitude"
                 name="lat"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
-                placeholder="33.5731"
+                placeholder="----"
                 step="any">
             </div>
 
@@ -195,7 +290,7 @@
                 [(ngModel)]="newLongitude"
                 name="lng"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
-                placeholder="-7.5898"
+                placeholder="----"
                 step="any">
             </div>
           </div>
