@@ -1,55 +1,55 @@
 {
-  "hash": "1c7dc2af",
+  "hash": "ce08bcbc",
   "configHash": "31490fc7",
-  "lockfileHash": "6516a41f",
-  "browserHash": "1cce61f5",
+  "lockfileHash": "a2340e9d",
+  "browserHash": "0620dae5",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "9f1fa30e",
+      "fileHash": "307d1090",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "643f9c6c",
+      "fileHash": "c43fc885",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "fb6fc521",
+      "fileHash": "c39c8f3c",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-      "fileHash": "2b7d26ae",
+      "fileHash": "dc9eb08a",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "b39a4767",
+      "fileHash": "2d5f154b",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "84487339",
+      "fileHash": "85765824",
       "needsInterop": false
     },
     "leaflet": {
       "src": "../../../../../../node_modules/leaflet/dist/leaflet-src.js",
       "file": "leaflet.js",
-      "fileHash": "3fea1c9e",
+      "fileHash": "c90e19be",
       "needsInterop": true
     },
     "leaflet-routing-machine": {
       "src": "../../../../../../node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.js",
       "file": "leaflet-routing-machine.js",
-      "fileHash": "bda6cb64",
+      "fileHash": "163b1efa",
       "needsInterop": true
     }
   },
