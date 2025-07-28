@@ -1,0 +1,100 @@
+[
+  {
+    "name": "Entreprise Mlahfi",
+    "form": "ENTREPRISE",
+    "activity": "Entreprise",
+    "address": "Rue Mohamed Al Fidouzi, Palmiers",
+    "addr_province": "Casablanca",
+    "addr_postcode": "20340",
+    "city": "Casablanca"
+  },
+  {
+    "name": "Entreprise de construction",
+    "form": "ASSOCIATION",
+    "activity": "Bâtiment",
+    "address": "Rocade des Deux Mers, Ahammar",
+    "addr_province": "Tanger",
+    "addr_postcode": "90045",
+    "city": "Tanger"
+  },
+  {
+    "name": "Entreprise Générale de Fumisterie Industrielle",
+    "form": "Cooperative",
+    "activity": "Grand magasin",
+    "address": "13, Rue Hassan El Basri, Agdal",
+    "addr_province": "Fès",
+    "addr_postcode": "30013",
+    "city": "Fès"
+  },
+  {
+    "name": "Entreprise Houar",
+    "form": "ENTREPRISE",
+    "activity": "Construction",
+    "address": "Boulevard Sidi Zayed Ben Soltane Al Nahyan, Lotissement Toutya, Hay Ibn Khaldoun",
+    "addr_province": "Oujda",
+    "addr_postcode": "60040",
+    "city": "Oujda"
+  },
+  {
+    "name": "TPEI",
+    "form": "ASSOCIATION",
+    "activity": "Civil engineer",
+    "address": "Boulevard Mohammed V, Hay Rabat",
+    "addr_province": "Oujda",
+    "addr_postcode": "60000",
+    "city": "Oujda"
+  },
+  {
+    "name": "Entreprise RAHAL",
+    "form": "Cooperative",
+    "activity": "Construction company",
+    "address": "18, Rue Port Said, Hay Al Mahatta, Hay Oued Nachef",
+    "addr_province": "Oujda",
+    "addr_postcode": "60000",
+    "city": "Oujda"
+  },
+  {
+    "name": "Entreprise Mohammed El Hore Travaux",
+    "form": "ENTREPRISE",
+    "activity": "Construction company",
+    "address": "Boulevard Mohammed Derfoufi, Village Toba Interieur",
+    "addr_province": "Oujda",
+    "addr_postcode": "60000",
+    "city": "Oujda"
+  },
+  {
+    "name": "Maison de l'entreprise",
+    "form": "Cooperative",
+    "activity": "Bâtiment",
+    "address": "Avenue Salah Eddine el Ayoubi, Bab Lamrissa",
+    "addr_province": "Salé",
+    "addr_postcode": "11015",
+    "city": "Salé"
+  },
+  {
+    "name": "Societe nationale d'entreprise d'equipement et de construction",
+    "form": "ENTREPRISE",
+    "activity": "Administration publique",
+    "address": "333, Rue Taïf",
+    "addr_province": "Beni Mellal",
+    "addr_postcode": "23000",
+    "city": "Beni Mellal"
+  },
+  {
+    "name": "Maroc Telecom Entreprise",
+    "form": "ASSOCIATION",
+    "activity": "Agence de télécommunication",
+    "address": "Boulevard Mohamed V, Hay Kadiri",
+    "addr_province": "Berrechid",
+    "addr_postcode": "16034",
+    "city": "Berrechid"
+  },
+  {
+    "name": "Entreprise general d'électricité",
+    "form": "Cooperative",
+    "activity": "Entreprise",
+    "address": "Rue Principale du Maroc, Niangon, Yopougon",
+    "addr_province": "Abidjan",
+    "city": "Abidjan"
+  }
+]

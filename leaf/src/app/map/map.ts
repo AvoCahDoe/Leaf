@@ -73,6 +73,12 @@ export class CartMapComponent implements AfterViewInit {
   filterIce = '';
   filteredMarkers: Marker[] = [];
 
+
+  showImportModal = false;
+importFile: File | null = null;
+importPreview: Marker[] = [];
+importStats = { total: 0, valid: 0, invalid: 0 };
+
   currentRouteInfo?: { distanceKm: string; timeMin: number };
 
   private apiUrl = 'http://localhost:5000/markers';
@@ -443,4 +449,66 @@ export class CartMapComponent implements AfterViewInit {
     }
     return this.markers.length;
   }
+
+
+
+
+
+
+exportMarkers(): void {
+  // Transform markers to the desired format
+  const exportData = this.markers.map(marker => ({
+    name: marker.name,
+    form: marker.form || '',
+    activity: marker.activity || '',
+    address: marker.address || '',
+    addr_province: marker.addr_province || '',
+    addr_postcode: marker.addr_postcode || '',
+    city: marker.city || ''
+  }));
+
+
+ const jsonContent = `const markers: Marker[] = ${JSON.stringify(exportData, null, 2)};`;
+  // Create and download the file
+  const blob = new Blob([jsonContent], { type: 'application/json' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `markers_export_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+
+  alert(`${this.markers.length} marqueurs exportés avec succès !`);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
