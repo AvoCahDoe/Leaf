@@ -488,20 +488,166 @@ exportMarkers(): void {
 
 
 
+//  Toggle import modal visibility
+
+toggleImportModal(): void {
+  this.showImportModal = !this.showImportModal;
+  if (!this.showImportModal) {
+    // Reset import state when closing
+    this.importFile = null;
+    this.importPreview = [];
+    this.importStats = { total: 0, valid: 0, invalid: 0 };
+  }
+  setTimeout(() => this.map.invalidateSize(), 300);
+}
+
+  // Handle file selection for import
+
+onFileSelected(event: any): void {
+  const file = event.target.files[0];
+  if (file && (file.type === 'application/json' || file.name.endsWith('.json'))) {
+    this.importFile = file;
+    this.previewImportFile(file);
+  } else {
+    alert('Veuillez sélectionner un fichier JSON valide.');
+    event.target.value = '';
+  }
+}
 
 
+  // Preview the import file content
+
+private previewImportFile(file: File): void {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const content = e.target?.result as string;
+      let markersData: Marker[];
+
+      // Try to parse as direct JSON array first
+      try {
+        markersData = JSON.parse(content);
+      } catch {
+        // try to extract from TypeScript const declaration
+        const match = content.match(/const\s+\w+\s*:\s*\w+\[\]\s*=\s*(\[[\s\S]*\]);?/);
+        if (match) {
+          markersData = JSON.parse(match[1]);
+        } else {
+          throw new Error('Format non reconnu');
+        }
+      }
+
+      if (!Array.isArray(markersData)) {
+        throw new Error('Le fichier doit contenir un tableau de marqueurs');
+      }
+
+      this.importPreview = [];
+      this.importStats = { total: markersData.length, valid: 0, invalid: 0 };
+
+      markersData.forEach((marker, index) => {
+        if (this.validateImportMarker(marker)) {
+          // Add default coordinates (will be geocoded during import)
+          const validMarker: Marker = {
+            name: marker.name || `Marqueur ${index + 1}`,
+            form: marker.form?.toUpperCase() || 'ENTREPRISE',
+            activity: marker.activity || '',
+            address: marker.address || '',
+            addr_province: marker.addr_province || '',
+            addr_postcode: marker.addr_postcode || '',
+            city: marker.city || '',
+            lat: 0, // Will be geocoded
+            lng: 0, // Will be geocoded
+            phone: marker.phone || '',
+            fax: marker.fax || '',
+            email: marker.email || '',
+            rc: marker.rc || '',
+            ice: marker.ice || ''
+          };
+          this.importPreview.push(validMarker);
+          this.importStats.valid++;
+        } else {
+          this.importStats.invalid++;
+        }
+      });
+
+      this.cdr.detectChanges();
+    } catch (error) {
+      alert('Erreur lors de la lecture du fichier: ' + (error as Error).message);
+      this.importFile = null;
+    }
+  };
+  reader.readAsText(file);
+}
+
+//  * Validate a marker from import file
+private validateImportMarker(marker: any): boolean {
+  return marker &&
+         typeof marker.name === 'string' &&
+         marker.name.trim().length > 0;
+}
 
 
+//  * Import markers to database
 
+async importMarkers(): Promise<void> {
+  if (this.importPreview.length === 0) {
+    alert('Aucun marqueur valide à importer.');
+    return;
+  }
 
+  this.isLoading = true;
+  let successCount = 0;
+  let errorCount = 0;
 
+  for (const marker of this.importPreview) {
+    try {
+      // Try to geocode the address
+      if (marker.address && marker.city) {
+        const geocoded = await this.geocodeAddress(marker.address, marker.city);
+        if (geocoded) {
+          marker.lat = geocoded.lat;
+          marker.lng = geocoded.lng;
+        } else {
+          // Use default coordinates for Morocco if geocoding fails
+          marker.lat = 31.7917;
+          marker.lng = -7.0926;
+        }
+      } else {
+        // Use default coordinates for Morocco
+        marker.lat = 31.7917;
+        marker.lng = -7.0926;
+      }
 
+      // Save to database
+      const response = await this.http.post<{ id: string }>(this.apiUrl, marker).toPromise();
+      if (response?.id) {
+        const createdMarker: Marker = { ...marker, id: response.id };
+        this.markers.push(createdMarker);
+        this.addMarkerToMap(createdMarker);
+        successCount++;
+      } else {
+        errorCount++;
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'importation du marqueur:', marker.name, error);
+      errorCount++;
+    }
+  }
 
+  this.isLoading = false;
+  this.cdr.detectChanges();
 
+  // Show import results
+  let message = `Importation terminée:\n`;
+  message += `✓ ${successCount} marqueurs importés avec succès\n`;
+  if (errorCount > 0) {
+    message += `✗ ${errorCount} marqueurs ont échoué`;
+  }
+  alert(message);
 
-
-
-
+  // Close and reset
+  this.toggleImportModal();
+}
 
 
 
