@@ -58,6 +58,7 @@ export class CartMapComponent implements AfterViewInit {
   newProvince = '';
   newPlace = '';
 
+  userLocationMarker: L.Marker | null = null;
   selectedA: string = '';
   selectedB: string = '';
   userLocation: L.LatLng | null = null;
@@ -299,6 +300,11 @@ importStats = { total: 0, valid: 0, invalid: 0 };
         this.userLocation = L.latLng(lat, lng);
         this.map.setView(this.userLocation, 15);
 
+            //reset existing to prevent gps problems (tiznit)
+        if (this.userLocationMarker) {
+          this.map.removeLayer(this.userLocationMarker);
+        }
+
         L.marker(this.userLocation, {
           icon: L.icon({
             iconUrl: 'assets/UserIcon.png',
@@ -354,6 +360,8 @@ importStats = { total: 0, valid: 0, invalid: 0 };
     }
   }
 
+
+  //we can also use locate(<Locate options> options?) method from leaflet apparently
   geocodeAddress(address: string, city: string): Promise<{ lat: number; lng: number } | null> {
     const fullAddress = `${address}, ${city}`;
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`;
