@@ -45,6 +45,12 @@
 -  **Résumé des filtres** avec compteur de marqueurs visibles
 -  **Intégration carte** - les marqueurs filtrés sont masqués/affichés automatiquement
 
+### 🗃️ Import / Export des Données
+- **Export JSON** des marqueurs existants
+
+- **Import JSON** pour ajouter plusieurs marqueurs d’un fichier
+
+- **Validation automatique** des formats et détection des erreurs
 
 
 
@@ -259,18 +265,37 @@ DELETE /markers/:id      # Supprimer un marqueur par ID
 - **Icône localisation** : centrer sur un marqueur spécifique
 - **Icône poubelle** : supprimer un marqueur
 
+
+
+
+### 🗃️ Importer / Exporter les marqueurs
+**Exporter**
+1. Cliquer sur **"Exporter"**
+
+2. Un fichier .json contenant tous les marqueurs visibles sera généré
+
+3. Le fichier peut être téléchargé localement
+
+**Importer**
+1. Cliquer sur **"Importer"**
+
+2. Glisser un fichier .json ou en sélectionner un manuellement
+
+3. Vérification du format des marqueurs
+
+4. Les nouveaux marqueurs sont ajoutés à la carte et sauvegardés en ATLAS
+
+
+
 ---
+
+
+
 
 ## ✨ Nouveautés et améliorations
 
 ###  Fonctionnalités récentes
--  **Système de filtrage avancé** multi-critères avec recherche temps réel
--  **Interface moderne** avec Tailwind CSS et effets glass morphism
--  **Performance optimisée** avec Angular 19 et standalone components
--  **Géocodage automatique** via Nominatim pour conversion adresse→coordonnées
-
--  **Animations fluides** et transitions CSS3
-
+-  **Export / Import JSON** pour une meilleure portabilité des données
 
 ###  Améliorations par rapport à la version précédente
 - Refactorisation complète de l'interface utilisateur
@@ -309,10 +334,9 @@ DELETE /markers/:id      # Supprimer un marqueur par ID
 
 ### 🎯 Prochaines fonctionnalités
 -  **Authentification utilisateur** et gestion des sessions
--  **Export/Import** des données (JSON, CSV, GeoJSON)
+-  **Export/Import** des données (JSON, CSV, GeoJSON)  // DONE
 -  **Déploiement cloud** (Heroku, Render, Vercel)
 -  **Tableaux de bord** et statistiques des marqueurs
-
 -  **Couches cartographiques** multiples (satellite, terrain)
 -  **API publique** avec documentation OpenAPI
 

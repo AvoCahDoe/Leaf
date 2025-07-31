@@ -64,28 +64,7 @@
 
 ---
 
-## 4. 🧭 Mode Géolocalisation Manuelle
-
-### 🧠 Propriétés
-
-| Nom                  | Rôle                                                    |
-| -------------------- | ------------------------------------------------------- |
-| `isManualGeoMode`    | Active/désactive le mode géolocalisation manuelle       |
-| `showManualGeoModal` | Affiche la modale de confirmation pour coord. manuelles |
-
-### 🔧 Méthodes
-
-| Nom                            | Rôle                                                        |
-| ------------------------------ | ----------------------------------------------------------- |
-| `toggleManualGeoMode()`        | Active/désactive le mode de géolocalisation manuelle        |
-| `onMapClick(e)`                | Récupère les coordonnées après clic sur la carte            |
-| `copyCoordinates()`            | Copie les coordonnées cliquées dans le presse-papiers       |
-| `useCoordinatesForNewMarker()` | Utilise les coord. manuelles pour créer un nouveau marqueur |
-| `closeManualGeoModal()`        | Ferme la modale de géolocalisation manuelle                 |
-
----
-
-## 5. 🔎 Filtres des Marqueurs
+## 4. 🔎 Filtres des Marqueurs
 
 ### 🧠 Propriétés
 
@@ -104,7 +83,7 @@
 
 ---
 
-## 6. 📤 Exportation des Marqueurs
+## 5. 📤 Exportation des Marqueurs
 
 ### 🔧 Méthodes
 
@@ -114,7 +93,7 @@
 
 ---
 
-## 7. 📥 Importation des Marqueurs
+## 6. 📥 Importation des Marqueurs
 
 ### 🧠 Propriétés
 
@@ -137,7 +116,7 @@
 
 ---
 
-## 8. 🧩 Divers / Techniques
+## 7. 🧩 Divers / Techniques
 
 ### Propriétés
 
