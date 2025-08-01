@@ -74,6 +74,12 @@ export class CartMapComponent implements AfterViewInit {
   filterIce = '';
   filteredMarkers: Marker[] = [];
 
+  // manual geo
+isManualGeoMode = false;
+manualGeoMarker: L.Marker | null = null;
+showManualGeoModal = false;
+clickedCoordinates: { lat: number; lng: number } | null = null;
+clickedAddress = '';
 
   showImportModal = false;
 importFile: File | null = null;
@@ -659,7 +665,135 @@ async importMarkers(): Promise<void> {
 
 
 
+// Add this method to toggle manual geo mode
+toggleManualGeoMode(): void {
+  this.isManualGeoMode = !this.isManualGeoMode;
 
+  if (this.isManualGeoMode) {
+    // Change cursor to crosshair when in manual geo mode
+    this.map.getContainer().style.cursor = 'crosshair';
+
+    // Add click event listener
+    this.map.on('click', this.onMapClick.bind(this));
+
+    // Show notification
+    alert('Mode géolocalisation manuelle activé. Cliquez sur la carte pour obtenir les coordonnées.');
+  } else {
+    // Reset cursor
+    this.map.getContainer().style.cursor = '';
+
+    // Remove click event listener
+    this.map.off('click', this.onMapClick.bind(this));
+
+    // Remove temporary marker if exists
+    if (this.manualGeoMarker) {
+      this.map.removeLayer(this.manualGeoMarker);
+      this.manualGeoMarker = null;
+    }
+
+    // Close modal if open
+    this.showManualGeoModal = false;
+  }
+
+  this.cdr.detectChanges();
+}
+
+// Handle map click events
+private async onMapClick(e: L.LeafletMouseEvent): Promise<void> {
+  if (!this.isManualGeoMode) return;
+
+  const { lat, lng } = e.latlng;
+  this.clickedCoordinates = { lat, lng };
+
+  // Remove previous temporary marker
+  if (this.manualGeoMarker) {
+    this.map.removeLayer(this.manualGeoMarker);
+  }
+
+  // Add temporary marker at clicked location
+  this.manualGeoMarker = L.marker([lat, lng], {
+    icon: L.icon({
+      iconUrl: 'assets/crosshair-marker.png', // You can use a different icon or create one
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -15],
+    })
+  }).addTo(this.map);
+
+  // Try to get address via reverse geocoding
+  this.clickedAddress = 'Recherche d\'adresse en cours...';
+  this.showManualGeoModal = true;
+  this.cdr.detectChanges();
+
+  try {
+    const address = await this.reverseGeocode(lat, lng);
+    this.clickedAddress = address || 'Adresse non trouvée';
+  } catch (error) {
+    this.clickedAddress = 'Erreur lors de la recherche d\'adresse';
+  }
+
+  this.cdr.detectChanges();
+}
+
+// Reverse geocoding to get address from coordinates
+private reverseGeocode(lat: number, lng: number): Promise<string | null> {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+
+  return this.http.get<any>(url, {
+    headers: {
+      'Accept-Language': 'fr',
+      'User-Agent': 'MyMapApp/1.0'
+    }
+  }).toPromise().then((data) => {
+    if (data && data.display_name) {
+      return data.display_name;
+    }
+    return null;
+  }).catch(() => null);
+}
+
+// Copy coordinates to clipboard
+copyCoordinates(): void {
+  if (this.clickedCoordinates) {
+    const coordText = `${this.clickedCoordinates.lat.toFixed(6)}, ${this.clickedCoordinates.lng.toFixed(6)}`;
+    navigator.clipboard.writeText(coordText).then(() => {
+      alert('Coordonnées copiées dans le presse-papiers !');
+    }).catch(() => {
+        //old browsers <
+      const textArea = document.createElement('textarea');
+      textArea.value = coordText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('Coordonnées copiées dans le presse-papiers !');
+    });
+  }
+}
+
+// Use coordinates for new marker form
+useCoordinatesForNewMarker(): void {
+  if (this.clickedCoordinates) {
+    this.newLatitude = this.clickedCoordinates.lat;
+    this.newLongitude = this.clickedCoordinates.lng;
+
+    // Close manual geo modal and open gestion modal
+    this.showManualGeoModal = false;
+    this.toggleManualGeoMode(); // Exit manual geo mode
+    this.showGestionModal = true;
+
+    alert('Coordonnées utilisées pour le nouveau marqueur !');
+  }
+}
+
+// Close manual geo modal
+closeManualGeoModal(): void {
+  this.showManualGeoModal = false;
+  if (this.manualGeoMarker) {
+    this.map.removeLayer(this.manualGeoMarker);
+    this.manualGeoMarker = null;
+  }
+}
 
 
 
