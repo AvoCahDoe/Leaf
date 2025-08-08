@@ -1,0 +1,40 @@
+<!-- src/app/features/map/components/gestion-modal/gestion-modal.component.html -->
+<div
+  class="fixed top-4 right-4 w-full max-w-md h-[calc(100vh-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 overflow-hidden flex flex-col animate-slideInRight md:max-w-lg"
+>
+  <!-- Modal Header -->
+  <div
+    class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex-shrink-0"
+  >
+    <h2 class="text-xl font-bold text-white">Gestion des Marqueurs</h2>
+    <p class="text-blue-100 text-sm mt-1">
+      Ajoutez et gérez vos points d'intérêt
+    </p>
+  </div>
+
+  <!-- Modal Content - Scrollable -->
+  <div class="flex-1 overflow-y-auto p-6 space-y-6">
+    <!--  Marker Form Component -->
+
+    <app-marker-form (addMarker)="onAddMarker($event)"> </app-marker-form>
+
+    <!-- Markers List Component -->
+    <app-marker-list
+      [markers]="markers"
+      (centerOnMarker)="onCenterOnMarker($event)"
+      (removeMarker)="onRemoveMarker($event)"
+    >
+    </app-marker-list>
+
+    <div class="flex gap-3 pt-4 border-t border-gray-200">
+      <button
+        type="button"
+        (click)="onClose()"
+        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200 border border-gray-300 flex-1"
+      >
+        Fermer
+      </button>
+    </div>
+  </div>
+  <button (click)="test()">test</button>
+</div>

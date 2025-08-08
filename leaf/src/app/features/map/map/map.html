@@ -1,0 +1,141 @@
+<!-- src/app/features/map/map.component.html -->
+<!-- <button (click)="test()">test</button> -->
+<div class="relative w-full h-screen overflow-hidden bg-gray-50 font-sans">
+  <!-- Map Container -->
+  <div id="map" class="w-full h-full rounded-none z-0"></div>
+
+  <!-- Loading Overlay -->
+  <div
+    *ngIf="isLoading"
+    class="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+  >
+    <div
+      class="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4"
+    >
+      <div class="relative">
+        <div
+          class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"
+        ></div>
+        <div
+          class="absolute inset-0 w-12 h-12 border-4 border-transparent border-t-blue-400 rounded-full animate-spin animate-reverse"
+        ></div>
+      </div>
+      <p class="text-gray-700 font-medium text-lg">Chargement en cours...</p>
+      <p class="text-gray-500 text-sm text-center">
+        Préparation de la carte interactive
+      </p>
+    </div>
+  </div>
+
+  <!-- Map Controls Component -->
+
+  <app-map-controls
+    (toggleGestion)="toggleGestionModal()"
+    (centerUser)="centerOnUserLocation()"
+    (toggleRouting)="toggleRoutingInputs()"
+    (toggleFilter)="toggleFilterModal()"
+  >
+  </app-map-controls>
+
+  <div
+    *ngIf="showGestionModal"
+    class="fixed top-4 right-4 w-full max-w-md h-[calc(100vh-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 overflow-hidden flex flex-col animate-slideInRight md:max-w-lg"
+  >
+    <div
+      class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex-shrink-0"
+    >
+      <h2 class="text-xl font-bold text-white">Gestion des Marqueurs</h2>
+      <p class="text-blue-100 text-sm mt-1">
+        Ajoutez et gérez vos points d'intérêt
+      </p>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <!-- contenu par gesition modal aaaah -->
+      <app-gestion-modal
+        [markers]="markers"
+        (closeModal)="toggleGestionModal()"
+        (addMarker)="handleAddMarker($event)"
+        (removeMarker)="handleRemoveMarker($event)"
+        (centerOnMarker)="centerMapOnMarker($event)"
+      >
+      </app-gestion-modal>
+    </div>
+  </div>
+
+  <div *ngIf="showRoutingInputs">
+    <app-routing-modal
+      [markers]="markers"
+      [userLocation]="userLocation"
+      [currentRouteInfo]="currentRouteInfo"
+      (calculateRoute)="drawRoute($event.startId, $event.endId)"
+      (closeModal)="toggleRoutingInputs()"
+    >
+      >
+    </app-routing-modal>
+  </div>
+
+  <!-- Filter Modal -->
+  <div *ngIf="showFilterModal">
+    <app-filter-modal
+      *ngIf="showFilterModal"
+      [filterName]="filterName"
+      [filterForm]="filterForm"
+      [filterIce]="filterIce"
+      [totalMarkers]="markers.length"
+      [filteredMarkersCount]="getFilteredMarkersCount()"
+      (filtersChange)="onFiltersChange($event.name, $event.form, $event.ice)"
+      (clearFilters)="clearFilters()"
+      (closeModal)="toggleFilterModal()"
+    >
+    </app-filter-modal>
+
+    <button (click)="toggleFilterModal()" class="px-4 py-2 bg-gray-300 rounded">
+      Fermer
+    </button>
+  </div>
+
+  <!-- Manual Geo Modal -->
+  <div
+    *ngIf="showManualGeoModal"
+    class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden animate-slideInUp"
+  >
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-700 px-6 py-4">
+      <h2 class="text-xl font-bold text-white flex items-center gap-2">
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+        Géolocalisation Manuelle
+      </h2>
+      <p class="text-indigo-100 text-sm mt-1">
+        Coordonnées et adresse du point sélectionné
+      </p>
+    </div>
+    <div class="p-6 space-y-6">
+      <app-manual-geo-modal> </app-manual-geo-modal>
+
+      <button
+        (click)="showManualGeoModal = false"
+        class="px-4 py-2 bg-gray-300 rounded"
+      >
+        Fermer
+      </button>
+    </div>
+  </div>
+</div>

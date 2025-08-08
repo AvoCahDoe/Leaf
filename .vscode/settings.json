@@ -1,0 +1,13 @@
+{
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "leaf\\src\\app/map": true,
+    "leaf\\src\\app\\features\\map\\components/import-modal": true,
+    "leaf\\src\\app\\features\\map\\components/manual-geo-modal": true
+  },
+  "explorerExclude.backup": {}
+}

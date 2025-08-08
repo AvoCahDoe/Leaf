@@ -1,0 +1,430 @@
+<!-- src/app/features/map/components/gestion-modal/components/marker-form/marker-form.component.html -->
+
+<form (ngSubmit)="onSubmit()" class="space-y-6">
+  <!-- Info Section -->
+  <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+    <h3
+      class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
+    >
+      <svg
+        class="w-4 h-4 text-blue-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      Informations
+    </h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Nom *</label
+        >
+        <input
+          [(ngModel)]="newMarkerName"
+          name="name"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Nom du marqueur"
+          required
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Activité</label
+        >
+        <input
+          [(ngModel)]="newActivity"
+          name="activity"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Type d'activité"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Forme juridique</label
+        >
+        <select
+          [(ngModel)]="newForm"
+          name="form"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white appearance-none bg-[url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3e%3c/svg%3e')] bg-[position:right_0.5rem_center] bg-no-repeat bg-[size:1.5em_1.5em] pr-10"
+        >
+          <option value="">-- Choisir --</option>
+          <option value="COOPERATIVE">Coopérative</option>
+          <option value="ENTREPRISE">Entreprise</option>
+          <option value="ASSOCIATION">Association</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Section -->
+  <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+    <h3
+      class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
+    >
+      <svg
+        class="w-4 h-4 text-green-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+        />
+      </svg>
+      Localisation
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Adresse</label
+        >
+        <input
+          [(ngModel)]="newAddress"
+          name="address"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Adresse complète"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Ville</label
+        >
+        <select
+          [(ngModel)]="newCity"
+          name="city"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white appearance-none bg-[url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3e%3c/svg%3e')] bg-[position:right_0.5rem_center] bg-no-repeat bg-[size:1.5em_1.5em] pr-10"
+        >
+          <option value="">-- Choisir --</option>
+          <option value="Agadir">Agadir</option>
+          <option value="Agadir Ida Ou Tanane">Agadir Ida Ou Tanane</option>
+          <option value="Al Haouz">Al Haouz</option>
+          <option value="Assa-Zag">Assa-Zag</option>
+          <option value="Azilal">Azilal</option>
+          <option value="Ben Slimane">Ben Slimane</option>
+          <option value="Béni Mellal">Béni Mellal</option>
+          <option value="Berkane">Berkane</option>
+          <option value="Berrechid">Berrechid</option>
+          <option value="Boujdour">Boujdour</option>
+          <option value="Boulemane">Boulemane</option>
+          <option value="Casablanca">Casablanca</option>
+          <option value="Chefchaouen">Chefchaouen</option>
+          <option value="Chichaoua">Chichaoua</option>
+          <option value="Chtouka Ait Baha">Chtouka Ait Baha</option>
+          <option value="Driouch">Driouch</option>
+          <option value="El Hajeb">El Hajeb</option>
+          <option value="El Jadida">El Jadida</option>
+          <option value="El Kelaa Sraghna">El Kelaa Sraghna</option>
+          <option value="Errachidia">Errachidia</option>
+          <option value="Es Semara">Es Semara</option>
+          <option value="Essaouira">Essaouira</option>
+          <option value="Fahs-Anjra">Fahs-Anjra</option>
+          <option value="Fès">Fès</option>
+          <option value="Figuig">Figuig</option>
+          <option value="Fquih Ben Salah">Fquih Ben Salah</option>
+          <option value="Guelmim">Guelmim</option>
+          <option value="Guercif">Guercif</option>
+          <option value="Ifrane">Ifrane</option>
+          <option value="Inezgane Ait Melloul">Inezgane Ait Melloul</option>
+          <option value="Jrada">Jrada</option>
+          <option value="Kénitra">Kénitra</option>
+          <option value="Khemisset">Khemisset</option>
+          <option value="Khénifra">Khénifra</option>
+          <option value="Khouribga">Khouribga</option>
+          <option value="Laâyoune">Laâyoune</option>
+          <option value="Larache">Larache</option>
+          <option value="M'Diq-Fnideq">M'Diq-Fnideq</option>
+          <option value="Mediouna">Mediouna</option>
+          <option value="Meknès">Meknès</option>
+          <option value="Midelt">Midelt</option>
+          <option value="Mohammedia">Mohammedia</option>
+          <option value="Moulay Yacoub">Moulay Yacoub</option>
+          <option value="Nador">Nador</option>
+          <option value="Nouaceur">Nouaceur</option>
+          <option value="Oujda">Oujda</option>
+          <option value="Oujda Angad">Oujda Angad</option>
+          <option value="Ouezzane">Ouezzane</option>
+          <option value="Ouarzazate">Ouarzazate</option>
+          <option value="Oued Eddahab">Oued Eddahab</option>
+          <option value="Rabat">Rabat</option>
+          <option value="Rehamna">Rehamna</option>
+          <option value="Safi">Safi</option>
+          <option value="Salé">Salé</option>
+          <option value="Settat">Settat</option>
+          <option value="Sefrou">Sefrou</option>
+          <option value="Sidi Bennour">Sidi Bennour</option>
+          <option value="Sidi Ifni">Sidi Ifni</option>
+          <option value="Sidi Kacem">Sidi Kacem</option>
+          <option value="Sidi Slimane">Sidi Slimane</option>
+          <option value="Skhirate-Temara">Skhirate-Temara</option>
+          <option value="Tan-Tan">Tan-Tan</option>
+          <option value="Taounate">Taounate</option>
+          <option value="Taourirt">Taourirt</option>
+          <option value="Tarfaya">Tarfaya</option>
+          <option value="Taroudant">Taroudant</option>
+          <option value="Tata">Tata</option>
+          <option value="Taza">Taza</option>
+          <option value="Tétouan">Tétouan</option>
+          <option value="Tinghir">Tinghir</option>
+          <option value="Tiznit">Tiznit</option>
+          <option value="Tanger">Tanger</option>
+          <option value="Tanger-Asilah">Tanger-Asilah</option>
+          <option value="Youssoufia">Youssoufia</option>
+          <option value="Zagora">Zagora</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Code Postal</label
+        >
+        <input
+          [(ngModel)]="newPostcode"
+          name="postcode"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="20000"
+        />
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Province</label
+        >
+        <select
+          [(ngModel)]="newProvince"
+          name="province"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white appearance-none bg-[url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'m6 8 4 4 4-4\'/%3e%3c/svg%3e')] bg-[position:right_0.5rem_center] bg-no-repeat bg-[size:1.5em_1.5em] pr-10"
+        >
+          <option value="">-- Choisir --</option>
+          <option value="Béni Mellal-Khénifra">Béni Mellal-Khénifra</option>
+          <option value="Casablanca-Settat">Casablanca-Settat</option>
+          <option value="Dakhla-Oued Ed-Dahab">Dakhla-Oued Ed-Dahab</option>
+          <option value="Drâa-Tafilalet">Drâa-Tafilalet</option>
+          <option value="Fès-Meknès">Fès-Meknès</option>
+          <option value="Guelmim-Oued Noun">Guelmim-Oued Noun</option>
+          <option value="Laâyoune-Sakia El Hamra">
+            Laâyoune-Sakia El Hamra
+          </option>
+          <option value="Marrakech-Safi">Marrakech-Safi</option>
+          <option value="Oriental">Oriental</option>
+          <option value="Rabat-Salé-Kénitra">Rabat-Salé-Kénitra</option>
+          <option value="Souss Massa">Souss Massa</option>
+          <option value="Tanger-Tétouan-Al Hoceima">
+            Tanger-Tétouan-Al Hoceima
+          </option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Lieu-dit (addr_place)</label
+        >
+        <input
+          [(ngModel)]="newPlace"
+          name="place"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Lieu-dit"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Latitude</label
+        >
+        <input
+          type="number"
+          [(ngModel)]="newLatitude"
+          name="lat"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="----"
+          step="any"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Longitude</label
+        >
+        <input
+          type="number"
+          [(ngModel)]="newLongitude"
+          name="lng"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="----"
+          step="any"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+    <h3
+      class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
+    >
+      <svg
+        class="w-4 h-4 text-purple-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+        />
+      </svg>
+      Contact
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Téléphone</label
+        >
+        <input
+          [(ngModel)]="newPhone"
+          name="phone"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="+212 6 XX XX XX XX"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Fax</label>
+        <input
+          [(ngModel)]="newFax"
+          name="fax"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="+212 5 XX XX XX XX"
+        />
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Email</label
+        >
+        <input
+          type="email"
+          [(ngModel)]="newEmail"
+          name="email"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="contact@example.com"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">RC</label>
+        <input
+          [(ngModel)]="newRc"
+          name="rc"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Registre Commerce"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">ICE</label>
+        <input
+          [(ngModel)]="newIce"
+          name="ice"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Identifiant Commun Entreprise"
+        />
+      </div>
+    </div>
+  </div>
+  <!-- Ajoutez cette section ou intégrez les champs dans une section existante -->
+  <!-- Exemple : Nouvelle section -->
+  <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 mt-6">
+    <h3
+      class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
+    >
+      <svg
+        class="w-4 h-4 text-indigo-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <!-- Icône de graphique ou finance -->
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+        />
+      </svg>
+      Informations Financières & Supplémentaires
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Nombre d'Employés</label
+        >
+        <input
+          type="number"
+          [(ngModel)]="newNombreEmployes"
+          name="nombreEmployes"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Nombre d'employés"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Chiffre d'Affaires (DH)</label
+        >
+        <input
+          type="number"
+          [(ngModel)]="newChiffreAffaires"
+          name="chiffreAffaires"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Chiffre d'affaires"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Date de Création</label
+        >
+        <input
+          type="date"
+          [(ngModel)]="newDateCreation"
+          name="dateCreation"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Identifiant Bourse</label
+        >
+        <input
+          [(ngModel)]="newIdentifiantBourse"
+          name="identifiantBourse"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Identifiant bourse"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Nombre de Clients Actifs</label
+        >
+        <input
+          type="number"
+          [(ngModel)]="newNombreClientsActifs"
+          name="nombreClientsActifs"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder="Nombre de clients actifs"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex gap-3 pt-4 border-t border-gray-200">
+    <button
+      type="submit"
+      class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
+    >
+      Ajouter le Marqueur
+    </button>
+  </div>
+</form>

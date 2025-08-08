@@ -1,0 +1,605 @@
+<!-- src/app/features/gestion/gestion.component.html -->
+<div class="flex flex-col h-screen bg-gray-50">
+  <!-- En-tête -->
+  <header class="bg-white shadow-sm py-4 px-6 flex-shrink-0">
+    <h1 class="text-2xl font-bold text-gray-800">Gestion des Marqueurs</h1>
+    <p class="text-gray-600 text-sm mt-1">
+      Visualisez, modifiez et gérez vos points d'intérêt. {{ isLoading }}
+    </p>
+  </header>
+
+  <!-- Zone de contenu principale -->
+  <main class="flex-grow overflow-hidden p-4">
+    <!-- Conteneur principal divisé en deux colonnes -->
+    <div class="flex h-full bg-white rounded-lg shadow overflow-hidden">
+      <!-- Colonne de Gauche : Liste des Marqueurs -->
+      <div class="w-1/2 border-r border-gray-200 flex flex-col">
+        <!-- En-tête de la liste -->
+        <div class="p-4 border-b border-gray-200 bg-gray-50">
+          <h2
+            class="text-lg font-semibold text-gray-800 flex items-center gap-2"
+          >
+            <svg
+              class="w-5 h-5 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 10h16M4 14h16M4 18h16"
+              />
+            </svg>
+            Liste des Marqueurs
+          </h2>
+        </div>
+
+        <!-- Indicateur de chargement pour la liste -->
+        @if (isLoading) {
+        <div class="flex justify-center items-center flex-grow">
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mr-2"
+          ></div>
+          <span class="text-gray-600">Chargement des marqueurs...</span>
+        </div>
+        }
+
+        <!-- Message d'erreur pour la liste -->
+        @if (!isLoading && error) {
+        <div class="p-4 bg-red-50 text-red-700 border-b border-red-200">
+          <strong>Erreur :</strong> {{ error }}
+        </div>
+        }
+
+        <!-- Contenu de la liste (si chargé et pas d'erreur) -->
+        @if (!isLoading && !error) {
+        <div class="flex-grow overflow-y-auto">
+          <!-- Message si aucun marqueur -->
+          @if (markers.length === 0) {
+          <div class="p-6 text-center text-gray-500">
+            <svg
+              class="w-12 h-12 mx-auto text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+            </svg>
+            <p class="mt-2">Aucun marqueur trouvé.</p>
+            <p class="mt-1 text-sm">
+              Commencez par en ajouter un sur la
+              <a routerLink="/map" class="text-blue-500 hover:underline"
+                >carte</a
+              >.
+            </p>
+          </div>
+          }
+
+          <!-- Liste des marqueurs -->
+          @if (markers.length > 0) {
+          <ul class="divide-y divide-gray-200">
+            @for (marker of markers; track trackById($index, marker)) {
+            <li
+              class="p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+              [class.bg-blue-50]="selectedMarker?.id === marker.id"
+              (click)="selectMarker(marker)"
+            >
+              <div class="flex items-center">
+                <div
+                  class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3"
+                >
+                  <span class="text-xs font-medium text-gray-700">{{
+                    marker.name.charAt(0)
+                  }}</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-medium text-gray-900 truncate">
+                    {{ marker.name }}
+                  </p>
+                  <p class="text-xs text-gray-500 truncate">
+                    {{ marker.city || "Ville non spécifiée" }}
+                  </p>
+                </div>
+                <div class="flex-shrink-0">
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-{{
+                      getFormColor(marker.form)
+                    }}-100 text-{{ getFormColor(marker.form) }}-800"
+                  >
+                    {{ marker.form || "N/A" }}
+                  </span>
+                </div>
+              </div>
+            </li>
+            }
+          </ul>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Colonne de Droite : Formulaire de Détail/Édition -->
+      <div class="w-1/2 flex flex-col">
+        <!-- En-tête du formulaire -->
+        <div
+          class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center"
+        >
+          <h2
+            class="text-lg font-semibold text-gray-800 flex items-center gap-2"
+          >
+            @if (!selectedMarker) {
+            <svg
+              class="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            } @if (selectedMarker) {
+            <svg
+              class="w-5 h-5 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+            } @if (!selectedMarker){<span>Détails du Marqueur</span> }
+            @if(selectedMarker){<span
+              >Édition de "{{ selectedMarker.name }}"</span
+            >}
+          </h2>
+          @if (selectedMarker) {
+          <button
+            (click)="deselectMarker()"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          }
+        </div>
+
+        <!-- Indicateur de chargement pour le formulaire -->
+        @if (isFormLoading) {
+        <div class="flex justify-center items-center flex-grow p-6">
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mr-2"
+          ></div>
+          <span class="text-gray-600">Traitement en cours...</span>
+        </div>
+        }
+
+        <!-- Message si aucun marqueur sélectionné -->
+        @if (!isFormLoading && !selectedMarker) {
+        <div
+          class="flex-grow flex items-center justify-center p-6 text-gray-500"
+        >
+          <div class="text-center">
+            <svg
+              class="w-16 h-16 mx-auto text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <p class="mt-4 text-lg">Sélectionnez un marqueur</p>
+            <p class="mt-2 text-sm">
+              Cliquez sur un élément de la liste pour afficher et modifier ses
+              détails ici.
+            </p>
+          </div>
+        </div>
+        }
+
+        <!-- Formulaire (affiché si un marqueur est sélectionné et pas en chargement) -->
+        @if (!isFormLoading && selectedMarker) {
+        <div class="flex-grow overflow-y-auto p-6">
+          <form
+            (ngSubmit)="onSubmit(markerForm)"
+            #markerForm="ngForm"
+            class="space-y-6"
+          >
+            <!-- Section Informations -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h3
+                class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3 flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Informations Générales
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Nom *</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.name"
+                    name="name"
+                    required
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Nom du marqueur"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Activité</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.activity"
+                    name="activity"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Type d'activité"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Forme Juridique</label
+                  >
+                  <select
+                    [(ngModel)]="selectedMarker.form"
+                    name="form"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  >
+                    <option value="">-- Choisir --</option>
+                    <option value="COOPERATIVE">Coopérative</option>
+                    <option value="ENTREPRISE">Entreprise</option>
+                    <option value="ASSOCIATION">Association</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section Localisation -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h3
+                class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3 flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                </svg>
+                Localisation
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Adresse</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.address"
+                    name="address"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Adresse complète"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Ville</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.city"
+                    name="city"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Ville"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Code Postal</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.addr_postcode"
+                    name="addr_postcode"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Code postal"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Province</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.addr_province"
+                    name="addr_province"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Province"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Lieu-dit</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.addr_place"
+                    name="addr_place"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Lieu-dit"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Latitude</label
+                  >
+                  <input
+                    type="number"
+                    [(ngModel)]="selectedMarker.lat"
+                    name="lat"
+                    step="any"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Latitude"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Longitude</label
+                  >
+                  <input
+                    type="number"
+                    [(ngModel)]="selectedMarker.lng"
+                    name="lng"
+                    step="any"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Longitude"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section Contact -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h3
+                class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3 flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                  />
+                </svg>
+                Informations de Contact
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Téléphone</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.phone"
+                    name="phone"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Téléphone"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Fax</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.fax"
+                    name="fax"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Fax"
+                  />
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    [(ngModel)]="selectedMarker.email"
+                    name="email"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Email"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >RC</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.rc"
+                    name="rc"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Registre de Commerce"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >ICE</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.ice"
+                    name="ice"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Identifiant Commun de l'Entreprise"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section Informations Financières & Supplémentaires -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h3
+                class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3 flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+                Informations Financières & Supplémentaires
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Nombre d'Employés</label
+                  >
+                  <input
+                    type="number"
+                    [(ngModel)]="selectedMarker.nombreEmployes"
+                    name="nombreEmployes"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Nombre d'employés"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Chiffre d'Affaires (DH)</label
+                  >
+                  <input
+                    type="number"
+                    [(ngModel)]="selectedMarker.chiffreAffaires"
+                    name="chiffreAffaires"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Chiffre d'affaires"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Date de Création</label
+                  >
+                  <input
+                    type="date"
+                    [(ngModel)]="selectedMarker.dateCreation"
+                    name="dateCreation"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Identifiant Bourse</label
+                  >
+                  <input
+                    [(ngModel)]="selectedMarker.identifiantBourse"
+                    name="identifiantBourse"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Identifiant bourse"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1"
+                    >Nombre de Clients Actifs</label
+                  >
+                  <input
+                    type="number"
+                    [(ngModel)]="selectedMarker.nombreClientsActifs"
+                    name="nombreClientsActifs"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Nombre de clients actifs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions du Formulaire -->
+            <div
+              class="flex justify-end space-x-3 pt-4 border-t border-gray-200"
+            >
+              <button
+                type="button"
+                (click)="onDelete()"
+                [disabled]="isFormLoading"
+                class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                Supprimer
+              </button>
+              <button
+                type="submit"
+                [disabled]="!markerForm.form?.valid || isFormLoading"
+                class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                Enregistrer les Modifications
+              </button>
+            </div>
+          </form>
+        </div>
+        }
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,211 @@
+<!-- src/app/features/map/components/manual-geo-modal/manual-geo-modal.component.html -->
+<div
+  class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden animate-slideInUp"
+>
+  <!-- Modal Header -->
+  <div class="bg-gradient-to-r from-indigo-600 to-purple-700 px-6 py-4">
+    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+        />
+      </svg>
+      Géolocalisation Manuelle
+    </h2>
+    <p class="text-indigo-100 text-sm mt-1">
+      Coordonnées et adresse du point sélectionné
+    </p>
+  </div>
+
+  <!-- Modal Content -->
+  <div class="p-6 space-y-6">
+    <!-- Coordinates Section -->
+    <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+      <h3
+        class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
+      >
+        <svg
+          class="w-4 h-4 text-indigo-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+          />
+        </svg>
+        Coordonnées GPS
+      </h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white rounded-lg p-4 border border-gray-100">
+          <label
+            class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1"
+            >Latitude</label
+          >
+          <div class="text-lg font-mono font-semibold text-gray-900">
+            {{ clickedCoordinates?.lat | number : "1.6-6" }}
+            <!-- Format to 6 decimal places -->
+          </div>
+        </div>
+        <div class="bg-white rounded-lg p-4 border border-gray-100">
+          <label
+            class="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1"
+            >Longitude</label
+          >
+          <div class="text-lg font-mono font-semibold text-gray-900">
+            {{ clickedCoordinates?.lng | number : "1.6-6" }}
+          </div>
+        </div>
+      </div>
+      <!-- Copy Coordinates Button -->
+      <button
+        (click)="onCopyCoordinates()"
+        class="w-full mt-4 bg-indigo-100 text-indigo-700 py-2 px-4 rounded-lg font-medium hover:bg-indigo-200 transition-all duration-200 flex items-center justify-center gap-2"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
+        </svg>
+        Copier les coordonnées
+      </button>
+    </div>
+
+    <!-- Address Section -->
+    <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+      <h3
+        class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 flex items-center gap-2"
+      >
+        <svg
+          class="w-4 h-4 text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          />
+        </svg>
+        Adresse Approximative
+      </h3>
+      <div class="bg-white rounded-lg p-4 border border-gray-100">
+        <div
+          class="text-sm text-gray-700 leading-relaxed"
+          [innerHTML]="clickedAddress"
+        >
+          <!-- Address content will be displayed here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+      <h4
+        class="text-sm font-semibold text-blue-900 mb-3 flex items-center gap-2"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+        Actions Rapides
+      </h4>
+      <button
+        (click)="onUseCoordinates()"
+        class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-all duration-200 flex items-center justify-center gap-2"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+        Utiliser pour nouveau marqueur
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3 pt-4 border-t border-gray-200">
+      <button
+        (click)="onClose()"
+        class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-3 px-6 rounded-lg font-medium hover:from-indigo-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+          />
+        </svg>
+        Continuer la géolocalisation
+      </button>
+      <button
+        (click)="onClose()"
+        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200 border border-gray-300 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
