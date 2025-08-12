@@ -175,44 +175,210 @@
         </div>
       </div>
 
-      <!-- Graphiques -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Camembert: Répartition par Forme Juridique -->
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-          <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-              Répartition par Forme Juridique
-            </h3>
+      <!-- Grille des Graphiques (Camembert + Nuage de Points en haut, 3 Histogrammes en bas) -->
+      <div class="space-y-6">
+        <!-- Ligne du haut : Camembert et Nuage de Points -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 1. Camembert: Répartition par Forme Juridique -->
+          <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Répartition par Forme Juridique
+              </h3>
+            </div>
+            <div class="p-4 flex items-center justify-center"> <!-- Ajout de flexbox pour centrer -->
+              <div class="w-full max-w-xs"> <!-- Limite la largeur si nécessaire -->
+                 <canvas
+                  baseChart
+                  [data]="pieChartData"
+                  [options]="pieChartOptions"
+                  [type]="pieChartType">
+                </canvas>
+              </div>
+            </div>
           </div>
-          <div class="p-4">
-            <canvas
-              baseChart
-              [data]="pieChartData"
-              [options]="pieChartOptions"
-              [type]="pieChartType"
-            >
-            </canvas>
+
+          <!-- 5. Nuage de Points: Employés vs Chiffre d'Affaires -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Relation: Employés vs Chiffre d'Affaires
+              </h3>
+            </div>
+            <div class="p-4 flex-grow"> <!-- Permet au canvas de s'étirer -->
+              <canvas
+                baseChart
+                [data]="scatterChartData"
+                [options]="scatterChartOptions"
+                [type]="scatterChartType">
+              </canvas>
+            </div>
           </div>
         </div>
 
-        <!-- Histogramme: Top 10 Villes -->
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-          <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-              Top 10 Villes (Nombre de Marqueurs)
-            </h3>
+        <!-- Ligne du bas : 3 Histogrammes -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- 2. Histogramme: Top 10 Villes (Nombre de Marqueurs) -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Top 10 Villes (Nombre de Marqueurs)
+              </h3>
+            </div>
+            <div class="p-4 flex-grow"> <!-- Permet au canvas de s'étirer -->
+              <canvas
+                baseChart
+                [data]="barChartData"
+                [options]="barChartOptions"
+                [type]="barChartType">
+              </canvas>
+            </div>
           </div>
-          <div class="p-4">
-            <canvas
-              baseChart
-              [data]="barChartData"
-              [options]="barChartOptions"
-              [type]="barChartType"
-            >
-            </canvas>
+
+          <!-- 3. Histogramme: Chiffre d'Affaires par Ville (Top 10) -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Top 10 Villes (Chiffre d'Affaires)
+              </h3>
+            </div>
+            <div class="p-4 flex-grow"> <!-- Permet au canvas de s'étirer -->
+              <canvas
+                baseChart
+                [data]="turnoverBarChartData"
+                [options]="turnoverBarChartOptions"
+                [type]="turnoverBarChartType">
+              </canvas>
+            </div>
+          </div>
+
+          <!-- 4. Histogramme: Nombre Moyen d'Employés par Forme Juridique -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Moy. Employés par Forme Juridique
+              </h3>
+            </div>
+            <div class="p-4 flex-grow"> <!-- Permet au canvas de s'étirer -->
+              <canvas
+                baseChart
+                [data]="avgEmpPerFormChartData"
+                [options]="avgEmpPerFormChartOptions"
+                [type]="avgEmpPerFormChartType">
+              </canvas>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Suite de la Grille des Graphiques (ajout des 5 nouveaux) -->
+      <div class="space-y-6">
+        <!-- Ligne supplémentaire 1 : Histogramme Années Création + Camembert Bourse -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 6. Histogramme: Distribution des Dates de Création (Années) -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Distribution des Dates de Création
+              </h3>
+            </div>
+            <div class="p-4 flex-grow">
+              <canvas
+                baseChart
+                [data]="creationYearBarChartData"
+                [options]="creationYearBarChartOptions"
+                [type]="creationYearBarChartType">
+              </canvas>
+            </div>
+          </div>
+
+          <!-- 9. Camembert: Répartition par Présence d'Identifiant Bourse -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Répartition par Identifiant Bourse
+              </h3>
+            </div>
+            <div class="p-4 flex-grow flex items-center justify-center">
+              <div class="w-full max-w-xs">
+                <canvas
+                  baseChart
+                  [data]="boursePieChartData"
+                  [options]="boursePieChartOptions"
+                  [type]="boursePieChartType">
+                </canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ligne supplémentaire 2 : Diagramme Radar + Histogramme Horizontal Clients -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 7. Diagramme Radar: Comparaison moyenne par Forme Juridique -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Comparaison par Forme Juridique (Moyennes)
+              </h3>
+              <p class="text-xs text-gray-500 mt-1">Axes: Employés, CA (normalisé), Clients</p>
+            </div>
+            <div class="p-4 flex-grow">
+              <canvas
+                baseChart
+                [data]="radarChartData"
+                [options]="radarChartOptions"
+                [type]="radarChartType">
+              </canvas>
+            </div>
+          </div>
+
+          <!-- 8. Histogramme Horizontal: Top Villes par Clients Actifs -->
+          <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Top 10 Villes (Nombre de Clients Actifs)
+              </h3>
+            </div>
+            <div class="p-4 flex-grow">
+              <canvas
+                baseChart
+                [data]="cityClientsHBarChartData"
+                [options]="cityClientsHBarChartOptions"
+                [type]="cityClientsHBarChartType">
+              </canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ligne supplémentaire 3 : Graphique Linéaire CA par Année -->
+        <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex-shrink-0">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Évolution du Chiffre d'Affaires par Année de Création
+              </h3>
+            </div>
+            <div class="p-4 flex-grow">
+              <canvas
+                baseChart
+                [data]="yearlyTurnoverLineChartData"
+                [options]="yearlyTurnoverLineChartOptions"
+                [type]="yearlyTurnoverLineChartType">
+              </canvas>
+            </div>
+          </div>
+      </div>
+      <!-- Fin de l'ajout des 5 nouveaux graphiques -->
+
+
+
+
+
+
+
+
+
+
+
 
       <!-- Tableau des Données Brutes (Sélection) -->
       <div class="bg-white shadow rounded-lg overflow-hidden">

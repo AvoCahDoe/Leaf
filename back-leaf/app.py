@@ -89,6 +89,7 @@ def serialize_marker(marker):
 @app.route('/markers', methods=['GET'])
 def get_markers():
     try:
+
         markers = list(markers_collection.find())
         return jsonify([serialize_marker(m) for m in markers])
     except Exception as e:

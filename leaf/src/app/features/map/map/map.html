@@ -1,8 +1,6 @@
-<!-- src/app/features/map/map.component.html -->
-<!-- <button (click)="test()">test</button> -->
 <div class="relative w-full h-screen overflow-hidden bg-gray-50 font-sans">
   <!-- Map Container -->
-  <div id="map" class="w-full h-full rounded-none z-0"></div>
+  <div id="map" class="rew-full h-full rounded-none z-0"></div>
 
   <!-- Loading Overlay -->
   <div
@@ -28,7 +26,6 @@
   </div>
 
   <!-- Map Controls Component -->
-
   <app-map-controls
     (toggleGestion)="toggleGestionModal()"
     (centerUser)="centerOnUserLocation()"
@@ -37,21 +34,11 @@
   >
   </app-map-controls>
 
+  <!-- Gestion Modal -->
   <div
     *ngIf="showGestionModal"
-    class="fixed top-4 right-4 w-full max-w-md h-[calc(100vh-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 overflow-hidden flex flex-col animate-slideInRight md:max-w-lg"
   >
-    <div
-      class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex-shrink-0"
-    >
-      <h2 class="text-xl font-bold text-white">Gestion des Marqueurs</h2>
-      <p class="text-blue-100 text-sm mt-1">
-        Ajoutez et gérez vos points d'intérêt
-      </p>
-    </div>
 
-    <div class="flex-1 overflow-y-auto p-6 space-y-6">
-      <!-- contenu par gesition modal aaaah -->
       <app-gestion-modal
         [markers]="markers"
         (closeModal)="toggleGestionModal()"
@@ -60,10 +47,11 @@
         (centerOnMarker)="centerMapOnMarker($event)"
       >
       </app-gestion-modal>
-    </div>
+
   </div>
 
-  <div *ngIf="showRoutingInputs">
+  <!-- Routing Modal -->
+  <div *ngIf="showRoutingInputs" >
     <app-routing-modal
       [markers]="markers"
       [userLocation]="userLocation"
@@ -71,14 +59,12 @@
       (calculateRoute)="drawRoute($event.startId, $event.endId)"
       (closeModal)="toggleRoutingInputs()"
     >
-      >
     </app-routing-modal>
   </div>
 
   <!-- Filter Modal -->
-  <div *ngIf="showFilterModal">
+  <div *ngIf="showFilterModal" >
     <app-filter-modal
-      *ngIf="showFilterModal"
       [filterName]="filterName"
       [filterForm]="filterForm"
       [filterIce]="filterIce"
@@ -90,7 +76,7 @@
     >
     </app-filter-modal>
 
-    <button (click)="toggleFilterModal()" class="px-4 py-2 bg-gray-300 rounded">
+    <button (click)="toggleFilterModal()" class="px-4 py-2 bg-gray-300 rounded mt-4">
       Fermer
     </button>
   </div>
@@ -98,7 +84,7 @@
   <!-- Manual Geo Modal -->
   <div
     *ngIf="showManualGeoModal"
-    class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden animate-slideInUp"
+    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden animate-slideInUp"
   >
     <div class="bg-gradient-to-r from-indigo-600 to-purple-700 px-6 py-4">
       <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -128,7 +114,7 @@
       </p>
     </div>
     <div class="p-6 space-y-6">
-      <app-manual-geo-modal> </app-manual-geo-modal>
+      <app-manual-geo-modal></app-manual-geo-modal>
 
       <button
         (click)="showManualGeoModal = false"

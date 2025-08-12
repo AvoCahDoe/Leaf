@@ -88,6 +88,7 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
       this.map = L.map('map').setView([34.020882, -6.841650], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
+
       }).addTo(this.map);
     } else {
       console.error("Map container with id 'map' not found!");
