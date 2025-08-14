@@ -43,14 +43,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   routingControl: L.Routing.Control | null = null;
   private resizeObserver: ResizeObserver | null = null;
 
-  // --- Modal Visibility States (Managed here or via a service) ---
+  // --- Modal Visibility States ---
   showGestionModal = false;
   showRoutingInputs = false;
   showFilterModal = false;
   showImportModal = false;
   showManualGeoModal = false;
 
-  // --- State that might be shared or managed by services ---
+  // --- States ---
   userLocationMarker: L.Marker | null = null;
   userLocation: L.LatLng | null = null;
   isLoading = false;

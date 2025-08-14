@@ -8,10 +8,8 @@ import { Chart, registerables } from 'chart.js';
 import { Marker } from '../../../core/models/marker.model';
 import { MarkerService } from '../../../core/services/marker.service';
 
-// Register Chart.js components
 Chart.register(...registerables);
 
-// --- Interfaces for new chart data structures ---
 interface CityFinancialData {
   totalTurnover: number;
   markerCount: number;
@@ -82,15 +80,12 @@ export class StatistiquesComponent implements OnInit {
   cityFinancialData: { [city: string]: CityFinancialData } = {};
   formEmployeeData: { [form: string]: FormEmployeeData } = {}; // For existing chart 4
 
-  // --- Data structures for NEW charts ---
   yearlyCreationData: YearlyCreationData[] = [];
   formComparisonData: FormComparisonData[] = []; // For Radar Chart
   cityClientData: CityClientData[] = []; // For Horizontal Bar Chart
   boursePresenceData: BoursePresenceData[] = []; // For Bourse Pie Chart
   yearlyTurnoverData: YearlyTurnoverData[] = []; // For Line Chart
   // ---------------------------------------------
-
-  // --- Existing Graph Configurations ---
 
   // 1. Camembert: Répartition par Forme Juridique
   public pieChartOptions: ChartConfiguration['options'] = {
@@ -110,6 +105,7 @@ export class StatistiquesComponent implements OnInit {
       }
     }
   };
+
   public pieChartType: ChartType = 'pie';
   public pieChartData: ChartData<'pie', number[], string | string[]> = {
     labels: [],
