@@ -4,55 +4,71 @@
 
 ---
 
-##  Fonctionnalités principales
+## 🗺️ Fonctionnalités principales
 
 ### 🗺️ Cartographie Interactive
--  **Carte interactive** basée sur OpenStreetMap et Leaflet.js
--  **Interface responsive** avec design moderne utilisant Tailwind CSS
+- **Carte interactive** basée sur OpenStreetMap et Leaflet.js
+- **Interface responsive** avec design moderne utilisant Tailwind CSS
+- **Navigation fluide** avec zoom, déplacement, et affichage de la légende
+- **Icônes personnalisées** pour chaque type de marqueur (bleu, jaune, rouge)
 
 ### 📍 Gestion des Marqueurs
--  **Ajout de marqueurs** avec formulaire complet incluant :
-  - Nom, coordonnées GPS (avec géocodage automatique)
-  - Activité commerciale
-  - Adresse complète compatible OpenStreetMap :  
-    `addr:housenumber`, `addr:street`, `addr:postcode`, `addr:province`, `addr:place`
-  - Contact : téléphone, fax, e-mail
-  - Informations légales : RC, ICE
-  - Type juridique : `COOPERATIVE`, `ENTREPRISE`, `ASSOCIATION`
--  **Icônes personnalisées** selon le type de marqueur (bleu, jaune, rouge)
--  **Affichage et recentrage** sur chaque marqueur avec popups détaillées
--  **Suppression** des marqueurs via l'interface avec synchronisation MongoDB
+- **Ajout, modification et suppression** de marqueurs via une interface intuitive
+- **Formulaire structuré en sections** :
+  - Informations générales : nom, activité, forme juridique
+  - Localisation géographique : adresse complète ou coordonnées GPS
+  - Informations de contact : téléphone, fax, email
+  - Données légales : RC, ICE, chiffre d'affaires, nombre d'employés
+- **Géocodage automatique** via Nominatim (OpenStreetMap)
+- **Popup contextuel** affichant les détails du marqueur
+- **Synchronisation en temps réel** avec la base de données MongoDB
 
 ### 💾 Interface de Gestion
--  **Interface modulaire** avec modales animées
--  **3 sections organisées** :
-  - `Informations Générales`
-  - `Localisation Géographique`
-  - `Informations de Contact`
+- **Tableau de bord complet** avec liste des marqueurs
+- **Édition en ligne** des propriétés de chaque marqueur
+- **Suppression sécurisée** avec confirmation
+- **Filtres intégrés** par type, ville, ou autre critère
 
-  
 ### 🧭 Navigation et Itinéraires
--  **Localisation utilisateur** avec recentrage automatique et icône dédiée
--  **Itinéraire interactif** entre deux points (marqueurs ou position utilisateur)
--  **Informations de route** : distance en km et temps estimé
--  **Sélection flexible** des points de départ et d'arrivée
--  **Gestion des routes** avec suppression facile
+- **Localisation utilisateur** avec icône personnalisée
+- **Traçage d'itinéraire interactif** entre deux points :
+  - Point de départ : position actuelle ou marqueur
+  - Destination : autre marqueur ou position
+- **Affichage des informations de route** :
+  - Distance (en km)
+  - Temps estimé (en minutes)
+- **Route visuelle** tracée directement sur la carte
 
 ### 🔍 Système de Filtrage Avancé
--  **Filtrage multi-critères** par nom, forme juridique, et numéro ICE
--  **Recherche en temps réel** avec mise à jour instantanée
--  **Recherche insensible à la casse** et correspondance partielle
--  **Résumé des filtres** avec compteur de marqueurs visibles
--  **Intégration carte** - les marqueurs filtrés sont masqués/affichés automatiquement
+- **Recherche multi-critères** :
+  - Nom du marqueur
+  - Forme juridique (COOPERATIVE, ENTREPRISE, ASSOCIATION)
+  - Numéro ICE
+- **Mise à jour instantanée** des résultats
+- **Recherche insensible à la casse**
+- **Résumé dynamique** du nombre de marqueurs filtrés
+
+### 📊 Statistiques Avancées
+- **Dashboard analytique** complet
+- **Graphiques interactifs** :
+  - Répartition par forme juridique (camembert)
+  - Relation employés vs chiffre d'affaires (nuage de points)
+  - Top villes par nombre de marqueurs (barres)
+  - Moyenne d'employés par type juridique
+  - Distribution des dates de création
+  - Répartition par identifiant boursier
+  - Comparaison tri-dimensionnelle (radar chart)
+- **Indicateurs clés** :
+  - Total des marqueurs
+  - Moyenne d'employés
+  - Chiffre d'affaires total
+  - Villes uniques
 
 ### 🗃️ Import / Export des Données
-- **Export JSON** des marqueurs existants
-
-- **Import JSON** pour ajouter plusieurs marqueurs d’un fichier
-
-- **Validation automatique** des formats et détection des erreurs
-
-
+- **Export JSON** des marqueurs visibles
+- **Import JSON** pour ajouter plusieurs marqueurs simultanément
+- **Validation automatique** du format des fichiers
+- **Détecteur d'erreurs** pour garantir l'intégrité des données
 
 ---
 
@@ -67,38 +83,31 @@
 | **Base de données** | MongoDB (local ou Atlas)       | 6.x+       |
 | **API REST**        | GET, POST, DELETE              | -          |
 | **Géocodage**       | Nominatim (OpenStreetMap)      | -          |
+| **Visualisation**   | Chart.js / D3.js               | -          |
 
 ---
 
 ## 📸 Captures d'écran
 
-### 🗺️ Interface principale avec contrôles
-![Interface principale](assets/global.png)  
-> Interface moderne avec boutons de contrôle (Gestion, Position, Itinéraire, Filtrer) et design glass morphism.
+### 🗺️ Vue principale de la carte
+![Main View](mainview.png)  
+> Interface principale avec carte interactive, boutons de contrôle, itinéraire tracé et popup de détail.
 
-### 📌 Localisation utilisateur
-![Position utilisateur](assets/UserPostion.png)  
-> Géolocalisation automatique avec icône utilisateur personnalisée et popup d'information.
+### 📌 Ajout de marqueur
+![Add Marker](AddMarker.png)  
+> Vue de la carte avec localisation de l'utilisateur et ajout d'un nouveau marqueur.
 
-### ➕ Ajout de marqueurs
-![Ajout marqueur](assets/FillinInfo.png)  
-![Marqueur ajouté](assets/Marker.png)  
-> Interface de création de marqueurs avec formulaire structuré en sections et validation.
+### 🔍 Filtre de recherche
+![Filter](Filter.png)  
+> Modal de filtrage permettant de rechercher par nom, forme juridique ou numéro ICE.
 
+### 📊 Tableau de gestion des marqueurs
+![Gestion des Marqueurs](assets/Gestion.png)  
+> Interface de gestion avec liste des marqueurs et formulaire d'édition.
 
-### 🛣️ Traçage d'itinéraire
-![Itinéraire](assets/Road.png)  
-> Système de routage avec sélection de points et affichage des informations de trajet (distance/temps).
-
-### 🔍 Système de filtrage
-![Filtrage](assets/filter-modal.png)  
-> Modal de filtrage permettant la recherche par nom, forme juridique et numéro ICE avec résumé en temps réel.
-
-
-
-
-
-
+### 📈 Dashboard statistique
+![Statistiques Avancées](assets/Stats.png)  
+> Analyse détaillée des marqueurs avec graphiques interactifs et indicateurs clés.
 
 ---
 
@@ -113,7 +122,7 @@
 
 ```bash
 # Cloner le repository
-git clone https://github.com/AvoCahDoe/Leaf.git
+git clone https://github.com/AvoCahDoe/Leaf.git  
 cd Leaf/backend
 
 # Créer l'environnement virtuel
@@ -131,7 +140,7 @@ python app.py
 # Backend disponible sur http://localhost:5000
 ```
 
-### 2. Frontend (Angular 19)
+### 2.  Frontend (Angular 19)
 
 ```bash
 # Aller dans le dossier frontend
@@ -145,11 +154,11 @@ ng serve -o
 # Application disponible sur http://localhost:4200
 ```
 
----
 
-## 📁 Structure du projet
+### 3.  Strucutre de Projet
 
-```bash
+
+```
 Leaf-App/
 │
 ├── back-leaf/
@@ -163,6 +172,12 @@ Leaf-App/
 │   │   │   ├── map.ts           # Logique principale du composant
 │   │   │   ├── map.html         # Template avec modales
 │   │   │   └── map.scss         # Styles et animations
+│   │   ├── gestion/
+│   │   │   ├── gestion.component.ts
+│   │   │   └── gestion.component.html
+│   │   ├── stats/
+│   │   │   ├── stats.component.ts
+│   │   │   └── stats.component.html
 │   │   ├── app.ts               # Composant racine
 │   │   ├── app.routes.ts        # Configuration des routes
 │   │   └── app.config.ts        # Configuration Angular
@@ -176,8 +191,6 @@ Leaf-App/
 │
 └── README.md
 ```
-
----
 
 ## 💾 Modèle de données MongoDB
 
@@ -202,23 +215,25 @@ Leaf-App/
   "addr_street": "Avenue Hassan II",
   "addr_postcode": "40000",
   "addr_province": "Marrakech-Safi",
-  "addr_place": "Gueliz"
+  "addr_place": "Gueliz",
+  "employees": 23,
+  "turnover": 25000,
+  "creation_date": "2020-05-15",
+  "stock_id": "BOURSE123",
+  "active_clients": 150
 }
 ```
 
----
-
 ## 🔧 Configuration API
 
-### Endpoints disponibles
-
-```http
+```bash
 GET    /markers          # Récupérer tous les marqueurs
 POST   /markers          # Créer un nouveau marqueur  
+PUT    /markers/:id      # Mettre à jour un marqueur
 DELETE /markers/:id      # Supprimer un marqueur par ID
 ```
 
-### Format de requête POST
+## Format de requête POST
 
 ```json
 {
@@ -229,11 +244,18 @@ DELETE /markers/:id      # Supprimer un marqueur par ID
   "activity": "Activité optionnelle",
   "address": "Adresse complète",
   "city": "Ville",
-  // ... autres champs optionnels
+  "phone": "+212...",
+  "email": "contact@example.com",
+  "rc": "RC12345",
+  "ice": "001234567000078",
+  "employees": 50,
+  "turnover": 100000,
+  "creation_date": "2023-01-01",
+  "stock_id": "BOURSE123",
+  "active_clients": 100
 }
 ```
 
----
 
 ## 🎯 Guide d'utilisation
 
@@ -265,43 +287,34 @@ DELETE /markers/:id      # Supprimer un marqueur par ID
 - **Icône localisation** : centrer sur un marqueur spécifique
 - **Icône poubelle** : supprimer un marqueur
 
-
-
-
 ### 🗃️ Importer / Exporter les marqueurs
+
 **Exporter**
 1. Cliquer sur **"Exporter"**
-
-2. Un fichier .json contenant tous les marqueurs visibles sera généré
-
+2. Un fichier `.json` contenant tous les marqueurs visibles sera généré
 3. Le fichier peut être téléchargé localement
 
 **Importer**
 1. Cliquer sur **"Importer"**
-
-2. Glisser un fichier .json ou en sélectionner un manuellement
-
+2. Glisser un fichier `.json` ou en sélectionner un manuellement
 3. Vérification du format des marqueurs
-
-4. Les nouveaux marqueurs sont ajoutés à la carte et sauvegardés en ATLAS
-
-
+4. Les nouveaux marqueurs sont ajoutés à la carte et sauvegardés en base
 
 ---
 
-
-
-
 ## ✨ Nouveautés et améliorations
 
-###  Fonctionnalités récentes
--  **Export / Import JSON** pour une meilleure portabilité des données
+### Fonctionnalités récentes
+- **Dashboard statistique complet** avec visualisations avancées
+- **Gestion centralisée des marqueurs** avec édition en ligne
+- **Export/Import JSON** pour une meilleure portabilité des données
 
-###  Améliorations par rapport à la version précédente
+### Améliorations par rapport à la version précédente
 - Refactorisation complète de l'interface utilisateur
 - Ajout du système de filtrage intelligent
-- Amélioration des performances de rendu
 - Intégration complète du géocodage automatique
+- Optimisation des performances de rendu
+- Amélioration de l'expérience utilisateur mobile
 
 ---
 
@@ -330,22 +343,15 @@ DELETE /markers/:id      # Supprimer un marqueur par ID
 
 ---
 
-## Améliorations futures
+## 🚀 Améliorations futures
 
 ### 🎯 Prochaines fonctionnalités
--  **Authentification utilisateur** et gestion des sessions
--  **Export/Import** des données (JSON, CSV, GeoJSON)  // DONE
--  **Déploiement cloud** (Heroku, Render, Vercel)
--  **Tableaux de bord** et statistiques des marqueurs
--  **Couches cartographiques** multiples (satellite, terrain)
--  **API publique** avec documentation OpenAPI
+- **Authentification utilisateur** et gestion des sessions
+- **Export/Import** des données (JSON, CSV, GeoJSON)
+- **Déploiement cloud** (Heroku, Render, Vercel)
+- **Tableaux de bord** personnalisables
+- **Couches cartographiques** multiples (satellite, terrain)
 
 ### 🛠️ Améliorations techniques
 - Tests unitaires et d'intégration
-- Cache intelligent des données
-- Surveillance et métriques
-- CI/CD automatisé
-
----
-
-
+- Cache intelligent des données ( On it rn!)
