@@ -90,23 +90,33 @@
 ## 📸 Captures d'écran
 
 ### 🗺️ Vue principale de la carte
-![Main View](mainview.png)  
+![Main View](/assets/MainView.png)  
 > Interface principale avec carte interactive, boutons de contrôle, itinéraire tracé et popup de détail.
 
 ### 📌 Ajout de marqueur
-![Add Marker](AddMarker.png)  
+![Add Marker](/assets/AddMarker.png)  
 > Vue de la carte avec localisation de l'utilisateur et ajout d'un nouveau marqueur.
 
+### 🛣️ Traçage d'itinéraire
+![Itinéraire](/assets/Route.png)  
+> Système de routage avec sélection de points et affichage des informations de trajet (distance/temps).
+
+### 📌 Localisation utilisateur
+![Position utilisateur](/assets/UserPosition.png)  
+> Géolocalisation automatique avec icône utilisateur personnalisée et popup d'information.
+
 ### 🔍 Filtre de recherche
-![Filter](Filter.png)  
+![Filter](/assets/Filter.png)  
 > Modal de filtrage permettant de rechercher par nom, forme juridique ou numéro ICE.
 
 ### 📊 Tableau de gestion des marqueurs
-![Gestion des Marqueurs](assets/Gestion.png)  
+![Statistiques Avancées](/assets/CRUD.png)
 > Interface de gestion avec liste des marqueurs et formulaire d'édition.
 
 ### 📈 Dashboard statistique
-![Statistiques Avancées](assets/Stats.png)  
+  
+![Gestion des Marqueurs](/assets/Stat.png)  
+![Gestion des Marqueurs](/assets/stat2.png)  
 > Analyse détaillée des marqueurs avec graphiques interactifs et indicateurs clés.
 
 ---
