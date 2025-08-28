@@ -202,6 +202,8 @@ Leaf-App/
 └── README.md
 ```
 
+![Statistiques Avancées](/assets/Structure.svg)
+
 ## 💾 Modèle de données MongoDB
 
 ```json
