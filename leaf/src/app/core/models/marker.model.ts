@@ -1,4 +1,4 @@
-// src/app/core/models/marker.model.ts
+
 export interface Marker {
   id?: string;
   name: string;
@@ -18,7 +18,6 @@ export interface Marker {
   addr_postcode?: string;
   addr_province?: string;
   addr_place?: string;
-  // --- Nouveaux champs ---
   nombreEmployes?: number;
   chiffreAffaires?: number;
   dateCreation?: string; // Format YYYY-MM-DD ou Date

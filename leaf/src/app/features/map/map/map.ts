@@ -1,5 +1,4 @@
 import { RoutingModalComponent } from './../components/routing-modal/routing-modal';
-// src/app/features/map/map.component.ts
 import { Component, AfterViewInit, ChangeDetectorRef, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -133,6 +132,7 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
 
 
   addMarkerToMap(marker: Marker, center: boolean = false): void {
+
     if (!this.map) return;
 
     const iconsMap: Record<string, L.Icon> = {
@@ -200,7 +200,7 @@ generatePopupContent(marker: Marker): string {
   if (marker.form) content += `Forme: ${marker.form}<br/>`;
   if (marker.nombreEmployes !== undefined && marker.nombreEmployes !== null) content += `Employés: ${marker.nombreEmployes}<br/>`;
   if (marker.chiffreAffaires !== undefined && marker.chiffreAffaires !== null) content += `Chiffre d'Affaires: ${marker.chiffreAffaires} DH<br/>`;
-  if (marker.dateCreation) content += `Création: ${marker.dateCreation}<br/>`; // Formatage de la date peut être nécessaire
+  if (marker.dateCreation) content += `Création: ${marker.dateCreation}<br/>`; 
   if (marker.identifiantBourse) content += `ID Bourse: ${marker.identifiantBourse}<br/>`;
   if (marker.nombreClientsActifs !== undefined && marker.nombreClientsActifs !== null) content += `Clients Actifs: ${marker.nombreClientsActifs}<br/>`;
   return content;
@@ -208,19 +208,24 @@ generatePopupContent(marker: Marker): string {
 
 
 
+
+
 async handleAddMarker(markerData: Omit<Marker, 'id' | 'lat' | 'lng'> & { lat?: number | null; lng?: number | null }): Promise<void> {
-  // --- Validation de base ---
+
   if (!markerData.name?.trim()) {
     alert('Veuillez entrer un nom pour le marqueur.');
     return;
   }
+
     if (!markerData.form?.trim()) {
     alert('Veuillez entrer la forme pour le marqueur.');
     return;
   }
 
   const validForms = ['COOPERATIVE', 'ENTREPRISE', 'ASSOCIATION'];
+
   const formValue = markerData.form?.toUpperCase();
+
   if (formValue && !validForms.includes(formValue)) {
      alert('Veuillez sélectionner un type de forme juridique valide.');
      return;
@@ -229,10 +234,9 @@ async handleAddMarker(markerData: Omit<Marker, 'id' | 'lat' | 'lng'> & { lat?: n
   let lat = markerData.lat;
   let lng = markerData.lng;
 
-  // --- Géocodage si les coordonnées ne sont pas fournies ---
+  // --- Géocodage 
   if (lat === null || lng === null || lat === undefined || lng === undefined) {
     if (markerData.address?.trim() && markerData.city?.trim()) {
-      // Utilise GeocodingService au lieu de HttpClient direct
       try {
         const geocoded = await this.geocodingService.geocodeAddress(markerData.address, markerData.city).toPromise();
         if (!geocoded) {
@@ -256,8 +260,8 @@ async handleAddMarker(markerData: Omit<Marker, 'id' | 'lat' | 'lng'> & { lat?: n
      alert('Les coordonnées doivent être des nombres valides.');
      return;
   }
-  // --- Prépare l'objet marqueur pour l'API ---
 
+  // --- Prépare l'objet marqueur pour l'API ---
   const newMarker: Omit<Marker, 'id'> = {
     name: markerData.name.trim(),
     lat: lat,
@@ -270,12 +274,11 @@ async handleAddMarker(markerData: Omit<Marker, 'id' | 'lat' | 'lng'> & { lat?: n
     email: markerData.email?.trim() || undefined,
     rc: markerData.rc?.trim() || undefined,
     ice: markerData.ice?.trim() || undefined,
-    // addr_housenumber et addr_street ne sont pas dans le formulaire, les gérer ou les omettre
     addr_housenumber: '', // Ou markerData.addr_housenumber?.trim() || ''
     addr_street: '',      // Ou markerData.addr_street?.trim() || ''
     addr_postcode: markerData.addr_postcode?.trim() || undefined,
     addr_province: markerData.addr_province?.trim() || undefined,
-    addr_place: markerData.addr_place?.trim() || undefined, // Assurez-vous que cette propriété existe dans votre modèle Marker
+    addr_place: markerData.addr_place?.trim() || undefined,     // matnsach hada later !
     form: formValue || undefined, // Utilise la valeur validée/majusculisée
   };
 
@@ -289,15 +292,13 @@ async handleAddMarker(markerData: Omit<Marker, 'id' | 'lat' | 'lng'> & { lat?: n
       this.markers.push(createdMarker);
 
       // Ajoute le marqueur à la carte Leaflet
-      this.addMarkerToMap(createdMarker, true); // addToMap=true, center=true
+      this.addMarkerToMap(createdMarker, true); // addToMap, center
 
       // alert(`Marqueur "${createdMarker.name}" ajouté avec succès !`);
     },
     error: (error) => {
       console.error('Error adding marker:', error);
-      // Affiche un message d'erreur plus convivial basé sur l'erreur du service
       alert(`Erreur lors de l'ajout du marqueur : ${error.message}`);
-      // Gérer l'erreur de manière appropriée (ex: afficher un message à l'utilisateur)
     }
   });
 }
@@ -361,10 +362,12 @@ handleRemoveMarker(index: number): void {
   }
 
   centerOnUserLocation(): void {
+
     if (!navigator.geolocation) {
       alert('La géolocalisation n\'est pas supportée par votre navigateur.');
       return;
     }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const lat = position.coords.latitude;
@@ -391,20 +394,22 @@ handleRemoveMarker(index: number): void {
     );
   }
 
-
-  // --- Routing (Could be moved to RoutingService) ---
   drawRoute(pointAValue: string, pointBValue: string): void {
+
     if (this.routingControl) {
       this.map.removeControl(this.routingControl);
       this.routingControl = null;
     }
+
     const getLatLng = (value: string): L.LatLng | null => {
       if (value === 'user' && this.userLocation) return this.userLocation;
-      const marker = this.markers.find(m => m.id === value);
+      const marker = this.markers.find(m => m.id === value);    //search element id with desired value
       return marker ? L.latLng(marker.lat, marker.lng) : null;
     };
+
     const pointA = getLatLng(pointAValue);
     const pointB = getLatLng(pointBValue);
+
     if (pointA && pointB) {
       this.routingControl = L.Routing.control({
         waypoints: [pointA, pointB],
@@ -412,6 +417,7 @@ handleRemoveMarker(index: number): void {
         addWaypoints: false,
         show: false
       }).addTo(this.map);
+
       const container = this.routingControl.getContainer();
       if (container) container.style.display = 'none';
       this.routingControl.on('routesfound', (e: any) => {
@@ -427,21 +433,18 @@ handleRemoveMarker(index: number): void {
     }
   }
 
-  // --- Modal Toggle Methods (To be called by child components or controls) ---
+  // --- Modal Toggle Methods  ---
   toggleGestionModal(): void {
     this.showGestionModal = !this.showGestionModal;
-
-    setTimeout(() => this.map?.invalidateSize(), 200);
+    // setTimeout(() => this.map?.invalidateSize(), 200);
   }
 
   toggleRoutingInputs(): void {
-
     if (this.routingControl && this.map) {
       this.map.removeControl(this.routingControl);
       this.routingControl = null;
       this.currentRouteInfo = undefined;    // reset lmetrics
     }
-
     this.showRoutingInputs = !this.showRoutingInputs;
   }
 
@@ -471,10 +474,11 @@ applyFilters(): void {
     // All conditions must be true (AND logic)
     return nameMatch && formMatch && iceMatch;
   });
-
   // Update the map display based on the new filtered list
   this.updateMarkersVisibility();
 }
+
+
 onFiltersChange(name: string, form: string, ice: string): void {
   // Update the local filter state properties
   this.filterName = name;
@@ -482,9 +486,7 @@ onFiltersChange(name: string, form: string, ice: string): void {
   this.filterIce = ice;
 
   // Apply the filters to update the filteredMarkers array and map visibility
-  // This reuses the existing applyFilters logic
   this.applyFilters();
-
 }
 /**
  * Updates markers visibility on the map based on current filters and overall visibility toggle.
@@ -540,7 +542,6 @@ getFilteredMarkersCount(): number {
 
 
 
-  // --- Utility ---
   trackById(index: number, marker: Marker): string {
     return marker.id ?? `${marker.lat},${marker.lng}`;
   }

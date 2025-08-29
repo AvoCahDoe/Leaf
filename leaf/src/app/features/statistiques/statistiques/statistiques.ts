@@ -6,48 +6,12 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, registerables } from 'chart.js';
 import { Marker } from '../../../core/models/marker.model';
+import { CityFinancialData,BoursePresenceData,CityClientData,FormComparisonData,FormEmployeeData, YearlyCreationData,YearlyTurnoverData } from '../../../core/models/statistiques.model';
 import { MarkerService } from '../../../core/services/marker.service';
 
 Chart.register(...registerables);
 
-interface CityFinancialData {
-  totalTurnover: number;
-  markerCount: number;
-}
 
-interface FormEmployeeData { // Assume similar structure exists for Turnover/Clients if needed for radar
-  totalEmployees: number;
-  markerCount: number;
-}
-
-interface YearlyCreationData {
-  year: string;
-  count: number;
-}
-
-// Assuming structures for Radar Chart calculations if not derived directly
-interface FormComparisonData {
-  form: string;
-  avgEmployees: number;
-  avgTurnover: number; // Potentially normalized for radar
-  avgClients: number;
-}
-
-interface CityClientData {
-  city: string;
-  totalClients: number;
-}
-
-interface BoursePresenceData {
-  hasBourse: string; // 'Avec Identifiant' ou 'Sans Identifiant'
-  count: number;
-}
-
-interface YearlyTurnoverData {
-  year: string;
-  totalTurnover: number;
-}
-// ---------------------------------------------------
 
 @Component({
   selector: 'app-statistiques',
@@ -76,7 +40,7 @@ export class StatistiquesComponent implements OnInit {
   formDistribution: { [key: string]: number } = {};
   cityDistribution: { [key: string]: number } = {};
 
-  // --- New data structures for calculations ---
+
   cityFinancialData: { [city: string]: CityFinancialData } = {};
   formEmployeeData: { [form: string]: FormEmployeeData } = {}; // For existing chart 4
 
@@ -94,6 +58,7 @@ export class StatistiquesComponent implements OnInit {
       legend: { display: true, position: 'top' },
       tooltip: {
         callbacks: {
+
           label: function(context) {
             const label = context.label || '';
             const value = context.parsed || 0;
@@ -101,12 +66,14 @@ export class StatistiquesComponent implements OnInit {
             const percentage = Math.round((value / total) * 100);
             return `${label}: ${value} (${percentage}%)`;
           }
+
         }
       }
     }
   };
 
   public pieChartType: ChartType = 'pie';
+
   public pieChartData: ChartData<'pie', number[], string | string[]> = {
     labels: [],
     datasets: [{
@@ -447,9 +414,9 @@ export class StatistiquesComponent implements OnInit {
   }
 
   private loadMarkers(): void {
-    this.isLoading = true;
-    this.cdr.detectChanges(); // Optional: force detection if needed early
 
+    this.isLoading = true;
+    this.cdr.detectChanges(); 
     this.error = null;
 
     this.markerService.getMarkers().subscribe({
@@ -458,13 +425,13 @@ export class StatistiquesComponent implements OnInit {
         this.calculateStats();
         this.updateChartData();
         this.isLoading = false;
-        this.cdr.detectChanges(); // Optional: force detection if needed
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         console.error('StatistiquesComponent: Error loading markers', err);
         this.error = 'Erreur lors du chargement des données: ' + (err.message || 'Erreur inconnue');
         this.isLoading = false;
-        this.cdr.detectChanges(); // Optional: force detection if needed
+        this.cdr.detectChanges(); 
       }
     });
   }
@@ -472,12 +439,13 @@ export class StatistiquesComponent implements OnInit {
   private calculateStats(): void {
     this.totalMarkers = this.markers.length;
 
-    // --- Existing Calculations ---
+    // nombre des employee
     const employeeCounts = this.markers
       .map(m => m.nombreEmployes)
-      .filter((val): val is number => val !== undefined && val !== null);
+      .filter((val): val is number => val !== undefined && val !== null);       //removing nulls and undef
     this.avgEmployees = employeeCounts.length > 0 ? employeeCounts.reduce((a, b) => a + b, 0) / employeeCounts.length : null;
 
+    //CA
     const turnovers = this.markers
       .map(m => m.chiffreAffaires)
       .filter((val): val is number => val !== undefined && val !== null);
@@ -486,19 +454,18 @@ export class StatistiquesComponent implements OnInit {
     this.formDistribution = {};
     this.markers.forEach(marker => {
       const form = marker.form || 'Non spécifiée';
-      this.formDistribution[form] = (this.formDistribution[form] || 0) + 1;
+      this.formDistribution[form] = (this.formDistribution[form] || 0) + 1;     // cehck if form exist as key if not =0 else +1 (flexible later to add more forms)
     });
 
     this.cityDistribution = {};
     this.markers.forEach(marker => {
       const city = marker.city || 'Ville non spécifiée';
-      this.cityDistribution[city] = (this.cityDistribution[city] || 0) + 1;
+      this.cityDistribution[city] = (this.cityDistribution[city] || 0) + 1;         // same concept above 
     });
-    // -----------------------------
 
-    // --- Calculations for NEW Graphs ---
 
     // 3. Données financières par ville (pour histogramme CA par ville)
+
     this.cityFinancialData = {};
     this.markers.forEach(marker => {
         const city = marker.city || 'Ville non spécifiée';
@@ -513,26 +480,23 @@ export class StatistiquesComponent implements OnInit {
     });
 
     // 4. Données des employés par forme (pour histogramme moy. employés par forme)
-    this.formEmployeeData = {}; // Re-calculate if not done before or ensure consistency
+    this.formEmployeeData = {}; 
     this.markers.forEach(marker => {
         const form = marker.form || 'Non spécifiée';
         const employees = marker.nombreEmployes;
         if (employees !== undefined && employees !== null) {
-            if (!this.formEmployeeData[form]) {
+            if (!this.formEmployeeData[form]) {          // set if new form detected
                 this.formEmployeeData[form] = { totalEmployees: 0, markerCount: 0 };
-            }
+            }         
             this.formEmployeeData[form].totalEmployees += employees;
             this.formEmployeeData[form].markerCount += 1;
         }
-        // Hypothetical: Collect similar data for clients/turnover if needed for radar
-        // This example simplifies by assuming radar data comes from averages calculated here or separately
     });
 
     // 6. Distribution des Dates de Création
     const creationYears: { [year: string]: number } = {};
     this.markers.forEach(marker => {
         if (marker.dateCreation) {
-            // Handle potential date string formats robustly
             let year: string | null = null;
             const dateObj = new Date(marker.dateCreation);
             if (!isNaN(dateObj.getTime())) {
@@ -549,13 +513,14 @@ export class StatistiquesComponent implements OnInit {
             }
         }
     });
-    this.yearlyCreationData = Object.entries(creationYears)
-      .map(([year, count]) => ({ year, count }))
-      .sort((a, b) => parseInt(a.year) - parseInt(b.year)); // Sort chronologically
+
+    this.yearlyCreationData = Object.entries(creationYears)     // array of arrays
+      .map(([year, count]) => ({ year, count }))                // array of objects
+      .sort((a, b) => parseInt(a.year) - parseInt(b.year));     // Sort chronologically
 
     // 7. Comparaison par Forme Juridique (Radar - Simplified Example)
     // This calculates average Employees, Turnover, Clients per form
-    // Assumes turnover/client data is collected similarly to employees if not already present
+
     const formTurnoverData: { [form: string]: { totalTurnover: number; markerCount: number } } = {};
     const formClientData: { [form: string]: { totalClients: number; markerCount: number } } = {};
 
@@ -588,13 +553,12 @@ export class StatistiquesComponent implements OnInit {
         ...Object.keys(this.formEmployeeData),
         ...Object.keys(formTurnoverData),
         ...Object.keys(formClientData)
-    ]);
+    ]);    //dynamic form detection sets dont allow duplicates and       
 
     allForms.forEach(form => {
         const empData = this.formEmployeeData[form] || { totalEmployees: 0, markerCount: 0 };
         const turnData = formTurnoverData[form] || { totalTurnover: 0, markerCount: 0 };
         const clientData = formClientData[form] || { totalClients: 0, markerCount: 0 };
-
         const avgEmp = empData.markerCount > 0 ? empData.totalEmployees / empData.markerCount : 0;
         const avgTurn = turnData.markerCount > 0 ? turnData.totalTurnover / turnData.markerCount : 0;
         const avgClient = clientData.markerCount > 0 ? clientData.totalClients / clientData.markerCount : 0;
@@ -662,7 +626,6 @@ export class StatistiquesComponent implements OnInit {
   }
 
   private updateChartData(): void {
-    // --- Update Existing Charts ---
     const formLabels = Object.keys(this.formDistribution);
     const formData = Object.values(this.formDistribution);
     this.pieChartData.labels = [...formLabels];
@@ -675,9 +638,6 @@ export class StatistiquesComponent implements OnInit {
     const cityData = sortedCities.map(item => item[1]);
     this.barChartData.labels = [...cityLabels];
     this.barChartData.datasets[0].data = [...cityData];
-    // -------------------------------
-
-    // --- Update NEW Charts ---
 
     // 3. Histogramme: Chiffre d'Affaires par Ville (Top 10)
     const sortedCityFinances = Object.entries(this.cityFinancialData)
@@ -705,8 +665,8 @@ export class StatistiquesComponent implements OnInit {
       .filter(m => m.nombreEmployes !== undefined && m.nombreEmployes !== null &&
                    m.chiffreAffaires !== undefined && m.chiffreAffaires !== null)
       .map(m => ({ x: m.nombreEmployes!, y: m.chiffreAffaires! }));
-    // Ensure data array is recreated for change detection
-    this.scatterChartData.datasets[0].data = [...scatterDataPoints];
+
+      this.scatterChartData.datasets[0].data = [...scatterDataPoints];
 
     // 6. Histogramme: Distribution des Dates de Création (Années)
     this.creationYearBarChartData.labels = this.yearlyCreationData.map(d => d.year);
@@ -769,14 +729,12 @@ export class StatistiquesComponent implements OnInit {
 
   formatNumber(value: number | null | undefined): string {
     if (value === null || value === undefined) return 'N/A';
-    // Use French locale and handle potential float formatting
-    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(value);
+    return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(value);
   }
 
   formatDate(dateStr: string | undefined): string {
     if (!dateStr) return 'N/A';
     let date: Date;
-    // Try parsing as ISO date string first
     date = new Date(dateStr);
     if (isNaN(date.getTime())) {
         // If that fails, assume it's already a readable string or handle specific format

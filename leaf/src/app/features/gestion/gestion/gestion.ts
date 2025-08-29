@@ -24,7 +24,6 @@ export class GestionComponent implements OnInit, OnDestroy{
   // --- Inject Services ---
   private markerService = inject(MarkerService);
   private cdr = inject(ChangeDetectorRef);
-  // Note: HttpClient is no longer needed directly here as MarkerService handles HTTP
 
   // --- Component State ---
   markers: Marker[] = [];
@@ -41,9 +40,6 @@ export class GestionComponent implements OnInit, OnDestroy{
 
 
   ngOnDestroy(): void {
-    // While not strictly necessary for a simple HTTP GET subscription,
-    // it's a good practice to manage subscriptions, especially if they could emit over time.
-    // For this specific case, it's mostly for completeness and future-proofing.
     console.log("GestionComponent: ngOnDestroy called");
   }
 
@@ -60,7 +56,7 @@ export class GestionComponent implements OnInit, OnDestroy{
         console.log("GestionComponent: Markers received", data);
         this.markers = data;
         this.isLoading = false;
-            this.cdr.detectChanges(); // Forcer la détection ici si nécessaire
+            this.cdr.detectChanges(); // Forcer la détection 
 
         console.log("GestionComponent: Markers loaded successfully, isLoading = false");
       },
@@ -68,14 +64,13 @@ export class GestionComponent implements OnInit, OnDestroy{
         console.error('GestionComponent: Error loading markers', err);
         // Provide a user-friendly error message
         this.error = 'Erreur lors du chargement des marqueurs: ' + (err.message || 'Erreur inconnue');
-        this.isLoading = false; // Crucial: Ensure isLoading is set to false on error
-            this.cdr.detectChanges(); // Forcer la détection ici si nécessaire
+        this.isLoading = false; 
+            this.cdr.detectChanges(); 
 
         console.log("GestionComponent: Error occurred, isLoading = false");
       },
       complete: () => {
          console.log('GestionComponent: getMarkers Observable completed');
-         // isLoading should be false by now due to next or error
          if(this.isLoading) {
              console.warn("GestionComponent: Observable completed but isLoading was still true. Setting to false.");
              this.isLoading = false;
@@ -87,14 +82,14 @@ export class GestionComponent implements OnInit, OnDestroy{
   }
 
   // --- Marker Selection ---
+
   /**
    * Selects a marker to display its details in the form for viewing/editing.
    * @param marker The marker object to select.
    */
+
   selectMarker(marker: Marker): void {
     console.log("GestionComponent: Marker selected", marker);
-    // Create a shallow copy to avoid modifying the original object in the list
-    // while editing. Changes are only saved when the user clicks "Save".
     this.selectedMarker = { ...marker };
   }
 

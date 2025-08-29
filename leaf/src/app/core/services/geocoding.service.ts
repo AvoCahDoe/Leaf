@@ -1,4 +1,3 @@
-// src/app/core/services/geocoding.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -10,6 +9,7 @@ import { catchError, map } from 'rxjs/operators';
 export class GeocodingService {
 
   private readonly NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org';
+
   private readonly DEFAULT_HEADERS = new HttpHeaders({
     'Accept-Language': 'fr',
     'User-Agent': 'MyMapApp/1.0' // Nominatim requires a User-Agent
@@ -17,17 +17,10 @@ export class GeocodingService {
 
   constructor(private http: HttpClient) { }
 
-  // /**
-  //  * Geocode an address to get its coordinates.
-  //  * @param address The address string.
-  //  * @param city The city string.
-  //  * @returns An Observable emitting the coordinates or null if not found.
-  //  */
-
 
   geocodeAddress(address: string, city: string): Observable<{ lat: number; lng: number } | null> {
     const fullAddress = `${address}, ${city}`;
-    const url = `${this.NOMINATIM_BASE_URL}/search`;
+    const url = `${this.NOMINATIM_BASE_URL}/search`;      // bach y3tina formt b7l hka https://nominatim.openstreetmap.org/search?format=json&q=<address>
     const params = {
       format: 'json',
       q: fullAddress
@@ -50,12 +43,7 @@ export class GeocodingService {
     );
   }
 
-  /**
-   * Reverse geocode coordinates to get an address.
-   * @param lat Latitude.
-   * @param lng Longitude.
-   * @returns An Observable emitting the address string or null if not found.
-   */
+
   reverseGeocode(lat: number, lng: number): Observable<string | null> {
     const url = `${this.NOMINATIM_BASE_URL}/reverse`;
     const params = {

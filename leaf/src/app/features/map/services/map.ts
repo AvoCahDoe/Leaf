@@ -21,6 +21,8 @@ export class MapService {
    * @param initialViewCenter The initial center coordinates [lat, lng].
    * @param initialZoom The initial zoom level.
    */
+
+  
   initializeMap(mapContainerId: string, initialViewCenter: L.LatLngExpression, initialZoom: number): L.Map {
     if (this.map) {
       console.warn('Map already initialized.');
@@ -138,6 +140,7 @@ export class MapService {
    * @para
    * m marker The marker data.
    */
+
   centerMapOnMarker(marker: Marker): void {
     if (!this.map) return;
     this.map.setView([marker.lat, marker.lng], this.map.getZoom());
@@ -149,6 +152,7 @@ export class MapService {
    * Removes a marker from the Leaflet map by its ID.
    * @param markerId The ID of the marker to remove.
    */
+
   removeMarkerFromMap(markerId: string): void {
     if (!this.map) return;
     const lMarker = this.leafletMarkers[markerId];
@@ -179,6 +183,7 @@ export class MapService {
    * @param pointB The ending L.LatLng.
    * @param onRouteFound Callback function executed when the route is found, providing distance and time.
    */
+
   drawRoute(pointA: L.LatLng, pointB: L.LatLng, onRouteFound?: (distanceKm: string, timeMin: number) => void): void {
     if (!this.map) {
       console.error('Map not initialized.');
@@ -195,7 +200,6 @@ export class MapService {
       waypoints: [pointA, pointB],
       routeWhileDragging: false,
       show: false,  //hide routing panel UI
-      // You can add more LRM options here if needed
     }).addTo(this.map);
 
     const container = this.routingControl.getContainer();
@@ -206,6 +210,7 @@ export class MapService {
   /**
    * Clears the currently drawn route.
    */
+  
   clearRoute(): void {
     if (this.map && this.routingControl) {
       this.map.removeControl(this.routingControl);

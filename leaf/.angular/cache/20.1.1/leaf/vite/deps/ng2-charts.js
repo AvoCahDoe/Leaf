@@ -2,7 +2,7 @@ import {
   Chart,
   defaults,
   registerables
-} from "./chunk-YIP3DVX6.js";
+} from "./chunk-M5VFZ22X.js";
 import {
   Directive,
   ElementRef,
@@ -20,8 +20,8 @@ import {
   ɵɵdefineInjectable,
   ɵɵdirectiveInject
 } from "./chunk-VQKZTHVP.js";
-import "./chunk-G6ECYYJH.js";
 import "./chunk-YVXMBCE5.js";
+import "./chunk-G6ECYYJH.js";
 import {
   BehaviorSubject,
   distinctUntilChanged

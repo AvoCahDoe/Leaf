@@ -21,7 +21,7 @@ export class MapControlsComponent {
   @Output() toggleFilter = new EventEmitter<void>();
   @Output() exportMarkers = new EventEmitter<void>();
   @Output() toggleImport = new EventEmitter<void>();
-  @Output() toggleManualGeo = new EventEmitter<boolean>(); // Emit desired state
+  @Output() toggleManualGeo = new EventEmitter<boolean>(); 
 
   onToggleGestion() {
     this.toggleGestion.emit();
@@ -52,7 +52,6 @@ export class MapControlsComponent {
   }
 
   onToggleManualGeo() {
-    // Emit the desired *new* state (opposite of current)
     this.toggleManualGeo.emit(!this.isManualGeoModeActive);
   }
 }

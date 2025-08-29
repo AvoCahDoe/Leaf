@@ -21,8 +21,8 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-  "src/assets",
-  "src/favicon.ico"
+              "src/assets",
+              "src/favicon.ico"
             ],
             "styles": [
               "src/styles.scss",
@@ -82,6 +82,24 @@
             "styles": [
               "src/styles.scss"
             ]
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "leaf:build",
+            "compodoc": false,
+            "port": 6006
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "browserTarget": "leaf:build",
+            "compodoc": false,
+            "outputDir": "storybook-static"
           }
         }
       }

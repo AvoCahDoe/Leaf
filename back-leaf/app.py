@@ -54,6 +54,17 @@ def geocode_address(address, city):
         
     return None, None    
 
+
+
+
+
+
+
+
+
+
+
+
 # Serialize MongoDB document to JSON 
 def serialize_marker(marker):
     serialized = {
@@ -75,21 +86,23 @@ def serialize_marker(marker):
         'addr_postcode': marker.get('addr_postcode'),
         'addr_province': marker.get('addr_province'),
         'addr_place': marker.get('addr_place'),
-        # --- Nouveaux champs ---
         'nombreEmployes': marker.get('nombreEmployes'),
         'chiffreAffaires': marker.get('chiffreAffaires'),
         'dateCreation': marker.get('dateCreation'), # Stocké comme string
         'identifiantBourse': marker.get('identifiantBourse'),
         'nombreClientsActifs': marker.get('nombreClientsActifs'),
-        # ---------------------
     }
     return serialized
+
+
+
+
+
 
 # GET all markers
 @app.route('/markers', methods=['GET'])
 def get_markers():
     try:
-
         markers = list(markers_collection.find())
         return jsonify([serialize_marker(m) for m in markers])
     except Exception as e:
@@ -100,8 +113,7 @@ def get_markers():
 @app.route('/markers', methods=['POST'])
 def add_marker():
     try:
-        data = request.json
-        
+        data = request.json  
         # Extraction des données, y compris les nouvelles
         lat = data.get('lat')
         lng = data.get('lng')
@@ -174,10 +186,7 @@ def delete_marker(marker_id):
 def update_marker(marker_id):
     try:
         data = request.json
-        
-
         update_data = {k: v for k, v in data.items() if k != 'id'}
-
         result = markers_collection.update_one(
             {'_id': ObjectId(marker_id)},
             {'$set': update_data}
@@ -199,4 +208,4 @@ def update_marker(marker_id):
 
 # Run Flask app
 if __name__ == '__main__':
-    app.run(debug=True) #debug=False en prod
+    app.run(debug=False) #debug=False en prod
