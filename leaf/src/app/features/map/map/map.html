@@ -33,6 +33,8 @@
     (centerUser)="centerOnUserLocation()"
     (toggleRouting)="toggleRoutingInputs()"
     (toggleFilter)="toggleFilterModal()"
+    (exportMarkers)="exportMarkers()"
+    (toggleImport)="toggleImportModal()"
   >
   </app-map-controls>
 
@@ -81,6 +83,35 @@
     <button (click)="toggleFilterModal()" class="px-4 py-2 bg-gray-300 rounded mt-4">
       Fermer
     </button>
+  </div>
+
+  <!-- Import Modal -->
+  <div
+    *ngIf="showImportModal"
+    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+  >
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-white">Importer des marqueurs</h2>
+        <p class="text-blue-100 text-sm mt-1">Fichier JSON (tableau de marqueurs)</p>
+      </div>
+      <button (click)="toggleImportModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
+    </div>
+    <div class="p-6 space-y-4">
+      <input
+        type="file"
+        accept=".json,application/json"
+        (change)="onImportFileSelected($event)"
+        class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+      />
+      <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" [(ngModel)]="replaceOnImport" />
+        Remplacer les marqueurs existants
+      </label>
+      <p class="text-xs text-gray-500">
+        Les données sont enregistrées dans le navigateur (localStorage). Exportez régulièrement pour sauvegarder.
+      </p>
+    </div>
   </div>
 
   <!-- Manual Geo Modal -->

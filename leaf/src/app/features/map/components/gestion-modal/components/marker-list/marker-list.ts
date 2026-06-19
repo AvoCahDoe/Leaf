@@ -1,4 +1,3 @@
-import { MarkerService } from './../../../../../../core/services/marker.service';
 // src/app/features/map/components/gestion-modal/components/marker-list/marker-list.component.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -10,7 +9,6 @@ import { MarkerListItemComponent } from '../marker-list-item/marker-list-item';
   imports: [CommonModule, MarkerListItemComponent], // Import the item component
   templateUrl: './marker-list.html',
   styleUrls: ['./marker-list.scss'],
-  providers:[MarkerService]
 })
 export class MarkerListComponent {
 

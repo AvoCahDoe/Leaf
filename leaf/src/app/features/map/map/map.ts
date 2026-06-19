@@ -48,6 +48,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   showFilterModal = false;
   showImportModal = false;
   showManualGeoModal = false;
+  replaceOnImport = false;
 
   // --- States ---
   userLocationMarker: L.Marker | null = null;
@@ -108,16 +109,10 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
     this.isLoading = true;
     this.markerService.getMarkers().subscribe({
       next: (data) => {
-        console.log('Données reçues du service:', data);
         this.markers = data;
-        console.log('this.markers après affectation:', this.markers);
-        for (const marker of data) {
-          this.addMarkerToMap(marker);
-        }
+        this.refreshMapMarkers();
         this.isLoading = false;
         this.cdr.detectChanges();
-
-
       },
       error: (error) => {
         console.error('Error loading markers:', error);
@@ -128,43 +123,99 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
     });
   }
 
+  private refreshMapMarkers(): void {
+    if (!this.map) {
+      return;
+    }
+
+    Object.values(this.leafletMarkers).forEach((marker) => {
+      this.map.removeLayer(marker);
+    });
+    this.leafletMarkers = {};
+
+    for (const marker of this.markers) {
+      this.addMarkerToMap(marker);
+    }
+    this.applyFilters();
+  }
+
+  exportMarkers(): void {
+    this.markerService.exportMarkersToFile();
+    alert(`${this.markers.length} marqueur(s) exporté(s).`);
+  }
+
+  toggleImportModal(): void {
+    this.showImportModal = !this.showImportModal;
+    setTimeout(() => this.map?.invalidateSize(), 300);
+  }
+
+  onImportFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const content = reader.result as string;
+        const parsedMarkers = this.markerService.parseMarkersFileContent(content);
+        this.markerService.importMarkers(parsedMarkers, this.replaceOnImport).subscribe({
+          next: (markers) => {
+            this.markers = markers;
+            this.refreshMapMarkers();
+            this.showImportModal = false;
+            this.cdr.detectChanges();
+            alert(`${parsedMarkers.length} marqueur(s) importé(s) avec succès.`);
+          },
+          error: (error) => {
+            console.error('Import error:', error);
+            alert(`Erreur lors de l'import : ${error.message}`);
+          }
+        });
+      } catch (error) {
+        console.error('Import parse error:', error);
+        alert(`Erreur lors de la lecture du fichier : ${(error as Error).message}`);
+      } finally {
+        input.value = '';
+      }
+    };
+    reader.readAsText(file);
+  }
 
 
+
+
+  private createMarkerIcon(color: string): L.DivIcon {
+    return L.divIcon({
+      className: '',
+      html: `<div style="background:${color};width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 28],
+      popupAnchor: [0, -28],
+    });
+  }
+
+  private getMarkerIcon(marker: Marker): L.DivIcon {
+    const iconsMap: Record<string, L.DivIcon> = {
+      COOPERATIVE: this.createMarkerIcon('#3b82f6'),
+      ENTREPRISE: this.createMarkerIcon('#eab308'),
+      ASSOCIATION: this.createMarkerIcon('#ef4444'),
+    };
+
+    if (marker.form && iconsMap[marker.form.toUpperCase()]) {
+      return iconsMap[marker.form.toUpperCase()];
+    }
+
+    return this.createMarkerIcon('#6b7280');
+  }
 
   addMarkerToMap(marker: Marker, center: boolean = false): void {
 
     if (!this.map) return;
 
-    const iconsMap: Record<string, L.Icon> = {
-      COOPERATIVE: L.icon({
-        iconUrl: 'assets/blue.png',
-        shadowUrl: 'assets/leaf-shadow.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40]
-      }),
-      ENTREPRISE: L.icon({
-        iconUrl: 'assets/yellow.png',
-        shadowUrl: 'assets/leaf-shadow.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40]
-      }),
-      ASSOCIATION: L.icon({
-        iconUrl: 'assets/red.png',
-        shadowUrl: 'assets/leaf-shadow.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40]
-      }),
-    };
-
-    const icon = marker.form && iconsMap[marker.form.toUpperCase()] ? iconsMap[marker.form.toUpperCase()] : L.icon({
-      iconUrl: 'assets/marker-icon.png',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40],
-      popupAnchor: [0, -40],
-    });
+    const icon = this.getMarkerIcon(marker);
 
     const leafletMarker = L.marker([marker.lat, marker.lng], { icon })
       .bindPopup(this.generatePopupContent(marker));
@@ -282,7 +333,7 @@ async handleAddMarker(markerData: Omit<Marker, 'id' | 'lat' | 'lng'> & { lat?: n
     form: formValue || undefined, // Utilise la valeur validée/majusculisée
   };
 
-  // --- Sauvegarde dans la base de données via MarkerService ---
+  // --- Sauvegarde locale via MarkerService ---
   this.markerService.addMarker(newMarker).subscribe({
     next: (res) => {
       // Crée l'objet marqueur complet avec l'ID reçu du backend
@@ -326,7 +377,7 @@ handleRemoveMarker(index: number): void {
     return;
   }
 
-  // --- Supprime de la base de données via MarkerService ---
+  // --- Supprime du stockage local via MarkerService ---
   this.markerService.deleteMarker(marker.id).subscribe({
     next: () => {
       // Supprime de la carte Leaflet si elle est initialisée
@@ -379,12 +430,7 @@ handleRemoveMarker(index: number): void {
               this.map.removeLayer(this.userLocationMarker);
             }
             this.userLocationMarker = L.marker(this.userLocation, {
-              icon: L.icon({
-                iconUrl: 'assets/UserIcon.png',
-                iconSize: [65, 65],
-                iconAnchor: [15, 30],
-                popupAnchor: [0, -30],
-              }),
+              icon: this.createMarkerIcon('#22c55e'),
             }).addTo(this.map).bindPopup('Vous êtes ici.').openPopup();
         }
       },

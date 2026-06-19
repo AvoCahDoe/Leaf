@@ -112,7 +112,6 @@ export class GestionComponent implements OnInit, OnDestroy{
         this.isFormLoading = true;
             this.cdr.detectChanges(); // Forcer la détection ici si nécessaire
 
-        // Call the MarkerService to update the marker on the backend
         this.markerService.updateMarker(this.selectedMarker).subscribe({
             next: (updatedMarkerFromServer) => {
                 console.log('GestionComponent: Marker updated successfully on server', updatedMarkerFromServer);
@@ -159,7 +158,6 @@ export class GestionComponent implements OnInit, OnDestroy{
       if (confirm(`Voulez-vous vraiment supprimer le marqueur "${this.selectedMarker.name}" ?`)) {
         this.isFormLoading = true;
         this.cdr.detectChanges();
-        // Call the MarkerService to delete the marker from the backend
         this.markerService.deleteMarker(this.selectedMarker.id).subscribe({
           next: () => {
             console.log('GestionComponent: Marker deleted successfully from server');

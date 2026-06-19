@@ -1,82 +1,177 @@
-// src/app/core/services/marker.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Marker } from '../../core/models/marker.model'; // Adjust path if needed
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { Marker } from '../models/marker.model';
 
-const API_URL = 'http://localhost:5000/markers';
+const STORAGE_KEY = 'leaf_markers';
 
 @Injectable({
-  providedIn: 'root', 
+  providedIn: 'root',
 })
-
 export class MarkerService {
+  private readonly markersSubject = new BehaviorSubject<Marker[]>(this.readFromStorage());
+  readonly markers$ = this.markersSubject.asObservable();
 
-  private apiUrl = API_URL;
-
-  constructor(private http: HttpClient) {}
-
-getMarkers(): Observable<Marker[]> {
-    return this.http.get<Marker[]>(this.apiUrl).pipe(
-      catchError(this.handleError)
-    );
+  getMarkers(): Observable<Marker[]> {
+    return of([...this.markersSubject.getValue()]);
   }
 
-addMarker(marker: Omit<Marker, 'id'>): Observable<{ id: string }> {
-    return this.http.post<{ id: string }>(this.apiUrl, marker).pipe(
-      catchError(this.handleError)
-    );
+  addMarker(marker: Omit<Marker, 'id'>): Observable<{ id: string }> {
+    const id = crypto.randomUUID();
+    const created: Marker = { ...marker, id };
+    this.persist([...this.markersSubject.getValue(), created]);
+    return of({ id });
   }
 
-deleteMarker(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-
-updateMarker(marker: Marker): Observable<Marker> {
-  const url = `${this.apiUrl}/${marker.id}`;
-  return this.http.put<Marker>(url, marker).pipe(
-    catchError(this.handleError)
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // --- Error Handling ---
-  private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'An unknown error occurred!';
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred.
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // The backend returned an unsuccessful response code.
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-      if (error.error && typeof error.error === 'string') {
-        errorMessage += `\nDetails: ${error.error}`;
-      } else if (error.error && typeof error.error === 'object') {
-        // Try to get a more specific message from the backend error object
-        errorMessage += `\nDetails: ${JSON.stringify(error.error)}`;
-      }
+  updateMarker(marker: Marker): Observable<Marker> {
+    if (!marker.id) {
+      return throwError(() => new Error('Marker ID is required for update'));
     }
-    console.error(errorMessage); // Log the error for debugging
-    // Return an observable with a user-facing error message.
-    return throwError(() => new Error(errorMessage));
+
+    const markers = this.markersSubject.getValue();
+    const index = markers.findIndex((m) => m.id === marker.id);
+    if (index === -1) {
+      return throwError(() => new Error(`Marker not found: ${marker.id}`));
+    }
+
+    const updated = [...markers];
+    updated[index] = { ...marker };
+    this.persist(updated);
+    return of(updated[index]);
+  }
+
+  deleteMarker(id: string): Observable<void> {
+    const current = this.markersSubject.getValue();
+    const markers = current.filter((m) => m.id !== id);
+    if (markers.length === current.length) {
+      return throwError(() => new Error(`Marker not found: ${id}`));
+    }
+    this.persist(markers);
+    return of(undefined);
+  }
+
+  importMarkers(markers: Marker[], replace = false): Observable<Marker[]> {
+    const normalized = markers
+      .filter((m) => m?.name?.trim())
+      .map((m) => ({
+        ...m,
+        id: m.id || crypto.randomUUID(),
+        name: m.name.trim(),
+      }));
+
+    const merged = replace ? normalized : [...this.markersSubject.getValue(), ...normalized];
+    this.persist(merged);
+    return of(merged);
+  }
+
+  parseMarkersFileContent(content: string): Marker[] {
+    let parsed: unknown;
+
+    try {
+      parsed = JSON.parse(content);
+    } catch {
+      const match = content.match(/const\s+\w+\s*:\s*\w+\[\]\s*=\s*(\[[\s\S]*\]);?/);
+      if (!match) {
+        throw new Error('Format de fichier non reconnu. Utilisez un tableau JSON.');
+      }
+      parsed = JSON.parse(match[1]);
+    }
+
+    if (!Array.isArray(parsed)) {
+      throw new Error('Le fichier doit contenir un tableau de marqueurs.');
+    }
+
+    return parsed.map((item, index) => this.normalizeImportedMarker(item, index));
+  }
+
+  exportMarkersToFile(): void {
+    const data = this.markersSubject.getValue();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `markers_export_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  private normalizeImportedMarker(item: unknown, index: number): Marker {
+    if (!item || typeof item !== 'object') {
+      throw new Error(`Marqueur invalide à l'index ${index}`);
+    }
+
+    const record = item as Record<string, unknown>;
+    const name = typeof record['name'] === 'string' ? record['name'].trim() : '';
+    if (!name) {
+      throw new Error(`Marqueur invalide à l'index ${index}: nom manquant`);
+    }
+
+    const lat = this.toNumber(record['lat']);
+    const lng = this.toNumber(record['lng']);
+
+    return {
+      id: typeof record['id'] === 'string' ? record['id'] : crypto.randomUUID(),
+      name,
+      lat: lat ?? 31.7917,
+      lng: lng ?? -7.0926,
+      activity: this.toString(record['activity']),
+      address: this.toString(record['address']),
+      city: this.toString(record['city']),
+      phone: this.toString(record['phone']),
+      fax: this.toString(record['fax']),
+      email: this.toString(record['email']),
+      rc: this.toString(record['rc']),
+      ice: this.toString(record['ice']),
+      form: this.toString(record['form'])?.toUpperCase(),
+      addr_housenumber: this.toString(record['addr_housenumber']),
+      addr_street: this.toString(record['addr_street']),
+      addr_postcode: this.toString(record['addr_postcode']),
+      addr_province: this.toString(record['addr_province']),
+      addr_place: this.toString(record['addr_place']),
+      nombreEmployes: this.toNumber(record['nombreEmployes']),
+      chiffreAffaires: this.toNumber(record['chiffreAffaires']),
+      dateCreation: this.toString(record['dateCreation']),
+      identifiantBourse: this.toString(record['identifiantBourse']),
+      nombreClientsActifs: this.toNumber(record['nombreClientsActifs']),
+    };
+  }
+
+  private toString(value: unknown): string | undefined {
+    return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+  }
+
+  private toNumber(value: unknown): number | undefined {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
+      return value;
+    }
+    if (typeof value === 'string' && value.trim()) {
+      const parsed = Number(value);
+      return Number.isNaN(parsed) ? undefined : parsed;
+    }
+    return undefined;
+  }
+
+  private readFromStorage(): Marker[] {
+    if (typeof localStorage === 'undefined') {
+      return [];
+    }
+
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return [];
+      }
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error('Failed to read markers from localStorage:', error);
+      return [];
+    }
+  }
+
+  private persist(markers: Marker[]): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(markers));
+    this.markersSubject.next(markers);
   }
 }
