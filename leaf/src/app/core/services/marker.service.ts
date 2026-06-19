@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { createMoroccanCityMarkers } from '../data/moroccan-cities.seed';
 import { Marker } from '../models/marker.model';
 
 const STORAGE_KEY = 'leaf_markers';
@@ -8,8 +9,17 @@ const STORAGE_KEY = 'leaf_markers';
   providedIn: 'root',
 })
 export class MarkerService {
-  private readonly markersSubject = new BehaviorSubject<Marker[]>(this.readFromStorage());
-  readonly markers$ = this.markersSubject.asObservable();
+  private readonly markersSubject: BehaviorSubject<Marker[]>;
+  readonly markers$: Observable<Marker[]>;
+
+  constructor() {
+    const { markers, seeded } = this.loadInitialMarkers();
+    this.markersSubject = new BehaviorSubject(markers);
+    this.markers$ = this.markersSubject.asObservable();
+    if (seeded) {
+      this.writeToStorage(markers);
+    }
+  }
 
   getMarkers(): Observable<Marker[]> {
     return of([...this.markersSubject.getValue()]);
@@ -152,26 +162,37 @@ export class MarkerService {
     return undefined;
   }
 
-  private readFromStorage(): Marker[] {
+  private loadInitialMarkers(): { markers: Marker[]; seeded: boolean } {
     if (typeof localStorage === 'undefined') {
-      return [];
+      return { markers: createMoroccanCityMarkers(), seeded: false };
     }
 
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return [];
+        return { markers: createMoroccanCityMarkers(), seeded: true };
       }
+
       const data = JSON.parse(raw);
-      return Array.isArray(data) ? data : [];
+      if (!Array.isArray(data)) {
+        return { markers: createMoroccanCityMarkers(), seeded: true };
+      }
+
+      return { markers: data, seeded: false };
     } catch (error) {
       console.error('Failed to read markers from localStorage:', error);
-      return [];
+      return { markers: createMoroccanCityMarkers(), seeded: true };
+    }
+  }
+
+  private writeToStorage(markers: Marker[]): void {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(markers));
     }
   }
 
   private persist(markers: Marker[]): void {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(markers));
+    this.writeToStorage(markers);
     this.markersSubject.next(markers);
   }
 }

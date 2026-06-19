@@ -1,32 +1,44 @@
 <header class="app-header">
+  <div class="app-header__accent" aria-hidden="true"></div>
+
   <div class="app-header__inner">
     <a routerLink="/map" class="app-header__brand">
-      <span class="app-header__logo">L</span>
-      <span class="app-header__title">Leaf</span>
+      <span class="app-header__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </span>
+      <span class="app-header__brand-text">
+        <span class="app-header__title">Leaf</span>
+        <span class="app-header__tagline">Cartographie du Maroc</span>
+      </span>
     </a>
 
     <nav class="app-header__nav" aria-label="Navigation principale">
-      <a
-        routerLink="/map"
-        routerLinkActive="is-active"
-        class="app-header__link"
-      >
-        Carte
+      <a routerLink="/map" routerLinkActive="is-active" class="app-header__link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+        </svg>
+        <span>Carte</span>
       </a>
-      <a
-        routerLink="/gestion"
-        routerLinkActive="is-active"
-        class="app-header__link"
-      >
-        Gestion
+      <a routerLink="/gestion" routerLinkActive="is-active" class="app-header__link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        <span>Gestion</span>
       </a>
-      <a
-        routerLink="/statistiques"
-        routerLinkActive="is-active"
-        class="app-header__link"
-      >
-        Statistiques
+      <a routerLink="/statistiques" routerLinkActive="is-active" class="app-header__link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>Statistiques</span>
       </a>
     </nav>
+
+    <div class="app-header__badge">
+      <span class="app-header__badge-dot" aria-hidden="true"></span>
+      <span>Maroc</span>
+    </div>
   </div>
 </header>

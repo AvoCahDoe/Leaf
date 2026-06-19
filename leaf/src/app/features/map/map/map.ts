@@ -123,10 +123,9 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
   private initMap(): void {
     const mapContainer = document.getElementById('map');
     if (mapContainer) {
-      this.map = L.map('map').setView([34.020882, -6.841650], 13);
+      this.map = L.map('map').setView([31.7917, -7.0926], 6);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-
+        attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
     } else {
       console.error("Map container with id 'map' not found!");
@@ -148,7 +147,7 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
     this.markerService.getMarkers().subscribe({
       next: (data) => {
         this.markers = data;
-        this.refreshMapMarkers();
+        this.refreshMapMarkers(true);
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -161,7 +160,7 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
     });
   }
 
-  private refreshMapMarkers(): void {
+  private refreshMapMarkers(fitBounds = false): void {
     if (!this.map) {
       return;
     }
@@ -175,6 +174,21 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
       this.addMarkerToMap(marker);
     }
     this.applyFilters();
+
+    if (fitBounds) {
+      this.fitMapToMarkers();
+    }
+  }
+
+  private fitMapToMarkers(): void {
+    if (!this.map || this.markers.length === 0) {
+      return;
+    }
+
+    const bounds = L.latLngBounds(
+      this.markers.map((marker) => [marker.lat, marker.lng] as [number, number])
+    );
+    this.map.fitBounds(bounds, { padding: [56, 56], maxZoom: 12 });
   }
 
   exportMarkers(): void {

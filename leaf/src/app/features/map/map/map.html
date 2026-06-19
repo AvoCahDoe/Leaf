@@ -13,6 +13,10 @@
 
   <app-map-controls
     [isManualGeoModeActive]="isManualGeoMode"
+    [isGestionOpen]="showGestionModal"
+    [isRoutingOpen]="showRoutingInputs"
+    [isFilterOpen]="showFilterModal"
+    [isImportOpen]="showImportModal"
     (toggleGestion)="toggleGestionModal()"
     (centerUser)="centerOnUserLocation()"
     (toggleRouting)="toggleRoutingInputs()"
@@ -59,7 +63,7 @@
     subtitle="Fichier JSON (tableau de marqueurs)"
     accent="blue"
     maxWidthClass="w-full max-w-lg"
-    panelClass="absolute top-4 left-4 right-4 mx-auto"
+    panelClass="absolute top-4 left-[5.5rem] right-4 md:left-[10.5rem] md:right-auto mx-auto"
     (closeModal)="toggleImportModal()"
   >
     <div class="p-5 space-y-4">
