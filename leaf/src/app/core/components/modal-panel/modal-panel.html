@@ -1,0 +1,54 @@
+<div
+  #panel
+  class="modal-panel bg-white rounded-xl shadow-2xl border border-gray-200/80 z-50 overflow-hidden flex flex-col"
+  [class]="panelClass + ' ' + maxWidthClass"
+  [style.transform]="transformStyle"
+  role="dialog"
+  aria-modal="true"
+>
+  <div
+    class="modal-panel__header flex items-center gap-2 px-3 py-2.5 text-white select-none shrink-0"
+    [ngClass]="headerClass"
+    (pointerdown)="onHeaderPointerDown($event)"
+    (pointermove)="onHeaderPointerMove($event)"
+    (pointerup)="onHeaderPointerUp($event)"
+    (pointercancel)="onHeaderPointerUp($event)"
+  >
+    <button
+      type="button"
+      class="modal-panel__drag p-1.5 rounded-md hover:bg-white/15 cursor-grab active:cursor-grabbing shrink-0"
+      aria-label="Déplacer la fenêtre"
+      tabindex="-1"
+    >
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="9" cy="7" r="1.5" />
+        <circle cx="15" cy="7" r="1.5" />
+        <circle cx="9" cy="12" r="1.5" />
+        <circle cx="15" cy="12" r="1.5" />
+        <circle cx="9" cy="17" r="1.5" />
+        <circle cx="15" cy="17" r="1.5" />
+      </svg>
+    </button>
+
+    <div class="flex-1 min-w-0">
+      <h2 class="text-sm font-semibold leading-tight truncate">{{ title }}</h2>
+      <p *ngIf="subtitle" class="text-xs text-white/80 truncate mt-0.5">{{ subtitle }}</p>
+    </div>
+
+    <button
+      type="button"
+      data-modal-close
+      (click)="onClose()"
+      class="modal-panel__close p-1.5 rounded-md hover:bg-white/15 shrink-0"
+      aria-label="Fermer"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="modal-panel__body flex-1 overflow-y-auto">
+    <ng-content />
+  </div>
+</div>

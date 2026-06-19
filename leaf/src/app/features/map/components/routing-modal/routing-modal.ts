@@ -3,10 +3,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Marker } from '../../../../core/models/marker.model';
+import { ModalPanelComponent } from '../../../../core/components/modal-panel/modal-panel';
 @Component({
   selector: 'app-routing-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalPanelComponent],
   templateUrl: './routing-modal.html',
   styleUrls: ['./routing-modal.scss']
 })

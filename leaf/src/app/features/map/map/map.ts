@@ -13,6 +13,7 @@ import { MapService } from '../services/map';
 import { GeocodingService } from '../../../core/services/geocoding.service';
 import { FilterModalComponent } from "../components/filter-modal/filter-modal/filter-modal";
 import { ManualGeoModalComponent } from "../components/manual-geo-modal/manual-geo-modal/manual-geo-modal";
+import { ModalPanelComponent } from '../../../core/components/modal-panel/modal-panel';
 
 @Component({
   selector: 'app-map',
@@ -24,7 +25,8 @@ import { ManualGeoModalComponent } from "../components/manual-geo-modal/manual-g
     GestionModalComponent,
     RoutingModalComponent,
     FilterModalComponent,
-    ManualGeoModalComponent
+    ManualGeoModalComponent,
+    ModalPanelComponent,
 ],
   templateUrl: './map.html',
   styleUrls: ['./map.scss']
@@ -49,6 +51,41 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   showImportModal = false;
   showManualGeoModal = false;
   replaceOnImport = false;
+  isManualGeoMode = false;
+  manualGeoMarker: L.Marker | null = null;
+  clickedCoordinates: { lat: number; lng: number } | null = null;
+  clickedAddress = '';
+  presetMarkerCoordinates: { lat: number; lng: number } | null = null;
+
+  private readonly onMapClick = async (event: L.LeafletMouseEvent): Promise<void> => {
+    if (!this.isManualGeoMode || !this.map) {
+      return;
+    }
+
+    const { lat, lng } = event.latlng;
+    this.clickedCoordinates = { lat, lng };
+
+    if (this.manualGeoMarker) {
+      this.map.removeLayer(this.manualGeoMarker);
+    }
+
+    this.manualGeoMarker = L.marker([lat, lng], {
+      icon: this.createMarkerIcon('#8b5cf6'),
+    }).addTo(this.map);
+
+    this.clickedAddress = 'Recherche d\'adresse en cours...';
+    this.showManualGeoModal = true;
+    this.cdr.detectChanges();
+
+    try {
+      const address = await this.geocodingService.reverseGeocode(lat, lng).toPromise();
+      this.clickedAddress = address || 'Adresse non trouvée';
+    } catch {
+      this.clickedAddress = 'Erreur lors de la recherche d\'adresse';
+    }
+
+    this.cdr.detectChanges();
+  };
 
   // --- States ---
   userLocationMarker: L.Marker | null = null;
@@ -78,6 +115,7 @@ filteredMarkers: Marker[] = []; // Assuming you have this array
       this.resizeObserver.disconnect();
     }
     if (this.map) {
+      this.map.off('click', this.onMapClick);
       this.map.remove();
     }
   }
@@ -480,10 +518,6 @@ handleRemoveMarker(index: number): void {
   }
 
   // --- Modal Toggle Methods  ---
-  toggleGestionModal(): void {
-    this.showGestionModal = !this.showGestionModal;
-    // setTimeout(() => this.map?.invalidateSize(), 200);
-  }
 
   toggleRoutingInputs(): void {
     if (this.routingControl && this.map) {
@@ -497,6 +531,87 @@ handleRemoveMarker(index: number): void {
   toggleFilterModal(): void {
     this.showFilterModal = !this.showFilterModal;
     setTimeout(() => this.map?.invalidateSize(), 300);
+  }
+
+  toggleManualGeoMode(active: boolean): void {
+    this.isManualGeoMode = active;
+
+    if (!this.map) {
+      return;
+    }
+
+    if (active) {
+      this.map.getContainer().style.cursor = 'crosshair';
+      this.map.on('click', this.onMapClick);
+      this.showManualGeoModal = true;
+      this.clickedCoordinates = null;
+      this.clickedAddress = '';
+    } else {
+      this.stopManualGeoMode();
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  closeManualGeoModal(): void {
+    this.showManualGeoModal = false;
+    if (this.manualGeoMarker && this.map) {
+      this.map.removeLayer(this.manualGeoMarker);
+      this.manualGeoMarker = null;
+    }
+    this.clickedCoordinates = null;
+    this.clickedAddress = '';
+    this.cdr.detectChanges();
+  }
+
+  private stopManualGeoMode(): void {
+    this.isManualGeoMode = false;
+    this.showManualGeoModal = false;
+    this.clickedCoordinates = null;
+    this.clickedAddress = '';
+
+    if (this.map) {
+      this.map.getContainer().style.cursor = '';
+      this.map.off('click', this.onMapClick);
+    }
+
+    if (this.manualGeoMarker && this.map) {
+      this.map.removeLayer(this.manualGeoMarker);
+      this.manualGeoMarker = null;
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  copyCoordinates(): void {
+    if (!this.clickedCoordinates) {
+      return;
+    }
+
+    const coordText = `${this.clickedCoordinates.lat.toFixed(6)}, ${this.clickedCoordinates.lng.toFixed(6)}`;
+    navigator.clipboard.writeText(coordText).then(() => {
+      alert('Coordonnées copiées dans le presse-papiers.');
+    }).catch(() => {
+      alert(`Coordonnées : ${coordText}`);
+    });
+  }
+
+  useCoordinatesForNewMarker(): void {
+    if (!this.clickedCoordinates) {
+      return;
+    }
+
+    this.presetMarkerCoordinates = { ...this.clickedCoordinates };
+    this.stopManualGeoMode();
+    this.showGestionModal = true;
+    this.cdr.detectChanges();
+  }
+
+  toggleGestionModal(): void {
+    this.showGestionModal = !this.showGestionModal;
+    if (!this.showGestionModal) {
+      this.presetMarkerCoordinates = null;
+    }
   }
 
 

@@ -1,41 +1,32 @@
-<header class="fixed top-0 left-0 w-full bg-gray-800 text-white shadow-md z-50">
-  <div class="container mx-auto px-4 py-3">
-    <div class="flex items-center justify-between">
-      <!-- Logo / Title -->
-      <div class="text-xl font-bold">Leaf Project</div>
+<header class="app-header">
+  <div class="app-header__inner">
+    <a routerLink="/map" class="app-header__brand">
+      <span class="app-header__logo">L</span>
+      <span class="app-header__title">Leaf</span>
+    </a>
 
-      <!-- Navigation -->
-      <nav>
-        <ul class="flex space-x-4">
-          <li>
-            <a
-              routerLink="/map"
-              routerLinkActive="bg-blue-600"
-              class="px-3 py-2 rounded-md hover:bg-gray-700 transition duration-150 ease-in-out"
-            >
-              Map
-            </a>
-          </li>
-          <li>
-            <a
-              routerLink="/gestion"
-              routerLinkActive="bg-blue-600"
-              class="px-3 py-2 rounded-md hover:bg-gray-700 transition duration-150 ease-in-out"
-            >
-              Gestion
-            </a>
-          </li>
-          <li>
-            <a
-              routerLink="/statistiques"
-              routerLinkActive="bg-blue-600"
-              class="px-3 py-2 rounded-md hover:bg-gray-700 transition duration-150 ease-in-out"
-            >
-              Statistiques
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <nav class="app-header__nav" aria-label="Navigation principale">
+      <a
+        routerLink="/map"
+        routerLinkActive="is-active"
+        class="app-header__link"
+      >
+        Carte
+      </a>
+      <a
+        routerLink="/gestion"
+        routerLinkActive="is-active"
+        class="app-header__link"
+      >
+        Gestion
+      </a>
+      <a
+        routerLink="/statistiques"
+        routerLinkActive="is-active"
+        class="app-header__link"
+      >
+        Statistiques
+      </a>
+    </nav>
   </div>
 </header>

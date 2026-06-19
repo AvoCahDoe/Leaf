@@ -1,14 +1,8 @@
-<div class="h-screen overflow-hidden">
-    <app-header class="z-100"></app-header>
-
-
-    <router-outlet
-
-    ></router-outlet>
-
-
-
-
+<div class="h-screen overflow-hidden flex flex-col">
+  <app-header></app-header>
+  <main class="flex-1 min-h-0 overflow-hidden">
+    <router-outlet></router-outlet>
+  </main>
 </div>
 
 

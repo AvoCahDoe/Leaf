@@ -1,5 +1,5 @@
 // src/app/features/map/components/gestion-modal/components/marker-form/marker-form.component.ts
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Marker } from '../../../../../../core/models/marker.model'; // Adjust path if needed
@@ -16,6 +16,13 @@ export class MarkerFormComponent {
   // --- Outputs ---
   /** Emitted when the user wants to add a new marker. Payload is the new marker data. */
   @Output() addMarker = new EventEmitter<Omit<Marker, 'id' | 'lat' | 'lng'> & { lat?: number | null; lng?: number | null }>();
+
+  @Input() set presetCoordinates(value: { lat: number; lng: number } | null) {
+    if (value) {
+      this.newLatitude = value.lat;
+      this.newLongitude = value.lng;
+    }
+  }
 
   // --- Form Data Properties ---
   newLatitude: number | null = null;

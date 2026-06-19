@@ -2,11 +2,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ModalPanelComponent } from '../../../../../core/components/modal-panel/modal-panel';
 
 @Component({
   selector: 'app-filter-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalPanelComponent],
   templateUrl: './filter-modal.html',
   styleUrls: ['./filter-modal.scss']
 })

@@ -1,0 +1,11 @@
+.modal-panel {
+  touch-action: none;
+}
+
+.modal-panel__header {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}

@@ -1,103 +1,68 @@
-<div class="pt-[50px] relative w-full h-screen overflow-hidden bg-gray-50 font-sans">
-  <!-- Map Container -->
+<div class="h-full relative w-full overflow-hidden bg-gray-50 font-sans">
+  <div id="map" class="w-full h-full z-0"></div>
 
-  <div id="map" class="w-full h-full  z-0"></div>
-
-
-  <!-- Loading Overlay -->
   <div
     *ngIf="isLoading"
     class="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
   >
-    <div
-      class="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4"
-    >
-      <div class="relative">
-        <div
-          class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"
-        ></div>
-        <div
-          class="absolute inset-0 w-12 h-12 border-4 border-transparent border-t-blue-400 rounded-full animate-spin animate-reverse"
-        ></div>
-      </div>
-      <p class="text-gray-700 font-medium text-lg">Chargement en cours...</p>
-      <p class="text-gray-500 text-sm text-center">
-        Préparation de la carte interactive
-      </p>
+    <div class="bg-white rounded-xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4">
+      <div class="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      <p class="text-gray-700 font-medium">Chargement en cours...</p>
     </div>
   </div>
 
-  <!-- Map Controls Component -->
   <app-map-controls
+    [isManualGeoModeActive]="isManualGeoMode"
     (toggleGestion)="toggleGestionModal()"
     (centerUser)="centerOnUserLocation()"
     (toggleRouting)="toggleRoutingInputs()"
     (toggleFilter)="toggleFilterModal()"
     (exportMarkers)="exportMarkers()"
     (toggleImport)="toggleImportModal()"
-  >
-  </app-map-controls>
+    (toggleManualGeo)="toggleManualGeoMode($event)"
+  ></app-map-controls>
 
-  <!-- Gestion Modal -->
-  <div
+  <app-gestion-modal
     *ngIf="showGestionModal"
-  >
+    [markers]="markers"
+    [presetCoordinates]="presetMarkerCoordinates"
+    (closeModal)="toggleGestionModal()"
+    (addMarker)="handleAddMarker($event)"
+    (removeMarker)="handleRemoveMarker($event)"
+    (centerOnMarker)="centerMapOnMarker($event)"
+  ></app-gestion-modal>
 
-      <app-gestion-modal
-        [markers]="markers"
-        (closeModal)="toggleGestionModal()"
-        (addMarker)="handleAddMarker($event)"
-        (removeMarker)="handleRemoveMarker($event)"
-        (centerOnMarker)="centerMapOnMarker($event)"
-      >
-      </app-gestion-modal>
+  <app-routing-modal
+    *ngIf="showRoutingInputs"
+    [markers]="markers"
+    [userLocation]="userLocation"
+    [currentRouteInfo]="currentRouteInfo"
+    (calculateRoute)="drawRoute($event.startId, $event.endId)"
+    (closeModal)="toggleRoutingInputs()"
+  ></app-routing-modal>
 
-  </div>
+  <app-filter-modal
+    *ngIf="showFilterModal"
+    [filterName]="filterName"
+    [filterForm]="filterForm"
+    [filterIce]="filterIce"
+    [totalMarkers]="markers.length"
+    [filteredMarkersCount]="getFilteredMarkersCount()"
+    (filtersChange)="onFiltersChange($event.name, $event.form, $event.ice)"
+    (clearFilters)="clearFilters()"
+    (closeModal)="toggleFilterModal()"
+  ></app-filter-modal>
 
-  <!-- Routing Modal -->
-  <div *ngIf="showRoutingInputs" >
-    <app-routing-modal
-      [markers]="markers"
-      [userLocation]="userLocation"
-      [currentRouteInfo]="currentRouteInfo"
-      (calculateRoute)="drawRoute($event.startId, $event.endId)"
-      (closeModal)="toggleRoutingInputs()"
-    >
-    </app-routing-modal>
-  </div>
-
-  <!-- Filter Modal -->
-  <div *ngIf="showFilterModal" >
-    <app-filter-modal
-      [filterName]="filterName"
-      [filterForm]="filterForm"
-      [filterIce]="filterIce"
-      [totalMarkers]="markers.length"
-      [filteredMarkersCount]="getFilteredMarkersCount()"
-      (filtersChange)="onFiltersChange($event.name, $event.form, $event.ice)"
-      (clearFilters)="clearFilters()"
-      (closeModal)="toggleFilterModal()"
-    >
-    </app-filter-modal>
-
-    <button (click)="toggleFilterModal()" class="px-4 py-2 bg-gray-300 rounded mt-4">
-      Fermer
-    </button>
-  </div>
-
-  <!-- Import Modal -->
-  <div
+  <app-modal-panel
     *ngIf="showImportModal"
-    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+    title="Importer des marqueurs"
+    subtitle="Fichier JSON (tableau de marqueurs)"
+    accent="blue"
+    maxWidthClass="w-full max-w-lg"
+    panelClass="absolute top-4 left-4 right-4 mx-auto"
+    (closeModal)="toggleImportModal()"
   >
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex items-center justify-between">
-      <div>
-        <h2 class="text-xl font-bold text-white">Importer des marqueurs</h2>
-        <p class="text-blue-100 text-sm mt-1">Fichier JSON (tableau de marqueurs)</p>
-      </div>
-      <button (click)="toggleImportModal()" class="text-white/80 hover:text-white text-2xl leading-none">&times;</button>
-    </div>
-    <div class="p-6 space-y-4">
+    <div class="p-5 space-y-4">
       <input
         type="file"
         accept=".json,application/json"
@@ -109,52 +74,17 @@
         Remplacer les marqueurs existants
       </label>
       <p class="text-xs text-gray-500">
-        Les données sont enregistrées dans le navigateur (localStorage). Exportez régulièrement pour sauvegarder.
+        Les données sont enregistrées dans le navigateur. Exportez régulièrement pour sauvegarder.
       </p>
     </div>
-  </div>
+  </app-modal-panel>
 
-  <!-- Manual Geo Modal -->
-  <div
-    *ngIf="showManualGeoModal"
-    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-hidden animate-slideInUp"
-  >
-    <div class="bg-gradient-to-r from-indigo-600 to-purple-700 px-6 py-4">
-      <h2 class="text-xl font-bold text-white flex items-center gap-2">
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-          />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-        Géolocalisation Manuelle
-      </h2>
-      <p class="text-indigo-100 text-sm mt-1">
-        Coordonnées et adresse du point sélectionné
-      </p>
-    </div>
-    <div class="p-6 space-y-6">
-      <app-manual-geo-modal></app-manual-geo-modal>
-
-      <button
-        (click)="showManualGeoModal = false"
-        class="px-4 py-2 bg-gray-300 rounded"
-      >
-        Fermer
-      </button>
-    </div>
-  </div>
+  <app-manual-geo-modal
+    [visible]="showManualGeoModal"
+    [clickedCoordinates]="clickedCoordinates"
+    [clickedAddress]="clickedAddress"
+    (copyCoordinates)="copyCoordinates()"
+    (useCoordinates)="useCoordinatesForNewMarker()"
+    (closeModal)="closeManualGeoModal()"
+  ></app-manual-geo-modal>
 </div>

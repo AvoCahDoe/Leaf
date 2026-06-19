@@ -4,13 +4,15 @@ import { CommonModule } from '@angular/common';
 import { Marker } from '../../../../../core/models/marker.model';
 import { MarkerFormComponent } from './../components/marker-form/marker-form';
 import { MarkerListComponent } from '../components/marker-list/marker-list';
+import { ModalPanelComponent } from '../../../../../core/components/modal-panel/modal-panel';
 @Component({
   selector: 'app-gestion-modal',
   standalone: true,
   imports: [
     CommonModule,
-    MarkerFormComponent, // Importer le sous-composant
-    MarkerListComponent  // Importer le sous-composant
+    MarkerFormComponent,
+    MarkerListComponent,
+    ModalPanelComponent,
   ],
   templateUrl: './gestion-modal.html',
   styleUrls: ['./gestion-modal.scss']
@@ -20,6 +22,7 @@ export class GestionModalComponent {
   // --- Inputs ---
   /** Liste des marqueurs existants passée par le parent. */
   @Input() markers: Marker[] =[];
+  @Input() presetCoordinates: { lat: number; lng: number } | null = null;
 
   // --- Outputs ---
   /** Émis lorsque l'utilisateur souhaite ajouter un nouveau marqueur.

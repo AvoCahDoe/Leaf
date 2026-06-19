@@ -1,39 +1,21 @@
-<div
-class="absolute top-[70px] bottom-[12px] right-4 w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 overflow-hidden flex flex-col animate-slideInRight md:max-w-lg"
+<app-modal-panel
+  title="Gestion des marqueurs"
+  subtitle="Ajoutez et gérez vos points d'intérêt"
+  accent="blue"
+  maxWidthClass="w-full max-w-md md:max-w-lg"
+  panelClass="absolute top-4 bottom-3 right-4"
+  (closeModal)="onClose()"
 >
-  <!-- Modal Header -->
-  <div
-    class="bg-gradient-to-r top-6 from-blue-600 to-indigo-700 px-6 py-4 flex-shrink-0"
-  >
-    <h2 class="text-xl font-bold text-white">Gestion des Marqueurs</h2>
-    <p class="text-blue-100 text-sm mt-1">
-      Ajoutez et gérez vos points d'intérêt
-    </p>
-  </div>
+  <div class="p-5 space-y-5">
+    <app-marker-form
+      [presetCoordinates]="presetCoordinates"
+      (addMarker)="onAddMarker($event)"
+    ></app-marker-form>
 
-  <!-- Modal Content - Scrollable -->
-  <div class="flex-1 overflow-y-auto p-6 space-y-6">
-    <!--  Marker Form Component -->
-
-    <app-marker-form (addMarker)="onAddMarker($event)"> </app-marker-form>
-
-    <!-- Markers List Component -->
     <app-marker-list
       [markers]="markers"
       (centerOnMarker)="onCenterOnMarker($event)"
       (removeMarker)="onRemoveMarker($event)"
-    >
-    </app-marker-list>
-
-    <div class="flex gap-3 pt-4 border-t border-gray-200">
-      <button
-        type="button"
-        (click)="onClose()"
-        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-all duration-200 border border-gray-300 flex-1"
-      >
-        Fermer
-      </button>
-    </div>
+    ></app-marker-list>
   </div>
-
-</div>
+</app-modal-panel>
